@@ -1,4 +1,19 @@
+from pyglet.gl import *
+
 __author__ = 'James'
+
+from OpenGL.GLUT import *
+from OpenGL.GLU import *
+from OpenGL.GL import *
+import sys
+import pygame
+
+from Scene import Scene
+
+
+scene = None
+width = 800
+height = 600
 
 
 def usage():
@@ -6,9 +21,58 @@ def usage():
     pass
 
 
-def main():
-    # TODO: everything
+def resize():
+    # TODO
     pass
+
+
+def draw():
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+    glClearColor(1.0, 1.0, 1.0, 1.0)  # white bg
+
+    glPushMatrix()
+    glColor3f(1.0, 0.0, 0.0)  # red sphere
+    glutSolidSphere(5, 20, 20)
+    glPopMatrix()
+
+    # scene.update()
+    # scene.draw()
+
+    glutSwapBuffers()
+    return
+
+
+def drawLights():
+    glEnable(GL_LIGHTING)
+    lightZeroPosition = [10.,4.,10.,1.]
+    lightZeroColor = [0.8,1.0,0.8,1.0] #green tinged
+    glLightfv(GL_LIGHT0, GL_POSITION, lightZeroPosition)
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, lightZeroColor)
+    glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 0.1)
+    glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.05)
+    glEnable(GL_LIGHT0)
+
+
+def main():
+    scene = Scene()
+
+    glutInit(sys.argv)
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH)
+
+    glutInitWindowSize(width, height)
+    glutCreateWindow("Collision Simulation")
+    glutDisplayFunc(draw)
+    glutReshapeFunc(resize)
+
+    glMatrixMode(GL_PROJECTION)
+    gluPerspective(40.0, 1.0, 1.0, 10000)
+    glMatrixMode(GL_MODELVIEW)
+    gluLookAt(0, 0, 50,
+              0, 0, 0,
+              0, 1, 0)
+    glPushMatrix()
+
+    glutMainLoop()
 
 
 if __name__ == "__main__":
