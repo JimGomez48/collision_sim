@@ -6,70 +6,126 @@ from OpenGL.GLUT import *
 from OpenGL.GLU import *
 from OpenGL.GL import *
 import sys
-import pygame
 
+from Colors import *
 from Scene import Scene
 
 
-scene = None
-width = 800
-height = 600
+# CONSTANTS
+VIEWPORT_WIDTH = 1280
+VIEWPORT_HEIGHT = 720
+WINDOW_X = 300
+WINDOW_Y = 200
+WINDOW_NAME = "Collision Simulation"
+
+# GLOBAL VARS
+scene = Scene()
 
 
 def usage():
-    # TODO: print command line usage
-    pass
+    print "python " + str(sys.argv[0])
 
 
 def resize():
-    # TODO
-    pass
-
+    glViewport(0, 0, VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
+    glMatrixMode(GL_PROJECTION)
+    glLoadIdentity()
+    gluPerspective(45.0, VIEWPORT_WIDTH / float(VIEWPORT_HEIGHT), 1.0, 10000)
 
 def draw():
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-    glClearColor(1.0, 1.0, 1.0, 1.0)  # white bg
+    set_lighting()
 
-    glPushMatrix()
-    glColor3f(1.0, 0.0, 0.0)  # red sphere
-    glutSolidSphere(5, 20, 20)
-    glPopMatrix()
 
-    # scene.update()
-    # scene.draw()
+    # draw_axes(1000)
+    #
+    # glPushMatrix()
+    # glLoadIdentity()
+    # gluLookAt(
+    #     1000, 1000, 2000,     # eye
+    #     0, 0, 0,        # look-at
+    #     0, 1, 0         # up
+    # )
+    # glColor4fv(WHITE)
+    # glutWireCube(1000)
+    # glColor4fv(RED)
+    # glutSolidSphere(50, 30, 20)
+    # glPopMatrix()
+
+    scene.update()
+    scene.draw()
 
     glutSwapBuffers()
-    return
 
 
-def drawLights():
+# def draw_axes(length):
+#     glMatrixMode(GL_MODELVIEW)
+#
+#     glPushMatrix()
+#
+#     glLineWidth(1)
+#     glBegin(GL_LINES)
+#     glColor4fv(RED)
+#     glVertex3f(0, 0, 0)
+#     glVertex3f(length, 0, 0)
+#
+#     glColor4fv(GREEN)
+#     glVertex3f(0,0,0)
+#     glVertex3f(0,length,0)
+#
+#     glColor4fv(BLUE)
+#     glVertex3f(0, 0, 0)
+#     glVertex3f(0, 0, length)
+#     glEnd()
+#     glLineWidth(1)
+#
+#     glPopMatrix()
+
+
+def set_lighting():
+    glClearColor(0.5, 0.7, 0.9, 1.0)  # sky bg
+    # glClearColor(0.0, 0.0, 0.0, 1.0)  # black bg
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+
+    glShadeModel(GL_SMOOTH)
+    glEnable(GL_DEPTH_TEST)
     glEnable(GL_LIGHTING)
-    lightZeroPosition = [10.,4.,10.,1.]
-    lightZeroColor = [0.8,1.0,0.8,1.0] #green tinged
-    glLightfv(GL_LIGHT0, GL_POSITION, lightZeroPosition)
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, lightZeroColor)
+    glEnable(GL_COLOR_MATERIAL)
+
+    # set light 0 as diffuse directional light
+    glLightfv(GL_LIGHT0, GL_POSITION, [1000.0, 1000.0, 500.0, 0.0])  # position
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, OFF_WHITE)  # color
     glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 0.1)
     glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.05)
+    # glLightfv(GL_LIGHT0, GL_SPECULAR, WHITE)  # color
+    # glMaterialfv(GL_FRONT, GL_SPECULAR, WHITE)
+    # glMateriali(GL_FRONT, GL_SHININESS, 60)
     glEnable(GL_LIGHT0)
+
+    # add ambient lighting
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, DARK_GRAY)
 
 
 def main():
-    scene = Scene()
-
     glutInit(sys.argv)
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH)
 
-    glutInitWindowSize(width, height)
-    glutCreateWindow("Collision Simulation")
+    # init sim window
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH)
+    glutInitWindowSize(VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
+    glutInitWindowPosition(WINDOW_X, WINDOW_Y)
+
+    # create sim window
+    sim_window = glutCreateWindow(WINDOW_NAME)
     glutDisplayFunc(draw)
     glutReshapeFunc(resize)
 
-    glMatrixMode(GL_PROJECTION)
-    gluPerspective(40.0, 1.0, 1.0, 10000)
+    # glMatrixMode(GL_PROJECTION)
+    # gluPerspective(45.0, float(VIEWPORT_WIDTH) / VIEWPORT_HEIGHT, 1.0, 10000)
     glMatrixMode(GL_MODELVIEW)
-    gluLookAt(0, 0, 50,
-              0, 0, 0,
-              0, 1, 0)
+    gluLookAt(
+        1000, 1000, 2000,     # eye
+        0, 0, 0,        # look-at
+        0, 1, 0         # up
+    )
     glPushMatrix()
 
     glutMainLoop()
