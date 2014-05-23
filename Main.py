@@ -46,5 +46,5 @@ def render(delta):
 
 if __name__ == "__main__":
     clock.schedule_interval(render, 1/120.0)
-    glutInit()
+    glutInit(sys.argv)
     pyglet.app.run()
