@@ -32,12 +32,15 @@ def on_resize(width, height):
 
 
 def render(delta):
+    window.clear()
+    # update the scene
     scene.update(float(delta))
 
-    window.clear()
+    # set up perspective view frustrum
     glMatrixMode(gl.GL_PROJECTION)
     glLoadIdentity()
     gluPerspective(45.0, VIEWPORT_WIDTH / float(VIEWPORT_HEIGHT), 1.0, 10000)
+    # draw the scene
     scene.draw()
 
 

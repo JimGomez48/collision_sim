@@ -9,17 +9,17 @@ class Object3D:
     this class.
     """
 
-    # RM = []     # Temporary Rotation matrix
-    # TM = []     # Temporary Translation matrix
-    # OM = []     # Orientation i.e Combined Rotation and Translation
+    RM = (GLfloat * 16)()   # Temporary Rotation matrix
+    TM = (GLfloat * 16)()   # Temporary Translation matrix
+    OM = (GLfloat * 16)()   # Orientation i.e Combined Rotation and Translation
 
     def __init__(self):
         glMatrixMode(GL_MODELVIEW)
         glPushMatrix()
         glLoadIdentity()
-        self.RM = glGetFloatv(GL_MODELVIEW_MATRIX, (GLfloat * 16)())
-        self.TM = glGetFloatv(GL_MODELVIEW_MATRIX, (GLfloat * 16)())
-        self.OM = glGetFloatv(GL_MODELVIEW_MATRIX, (GLfloat * 16)())
+        glGetFloatv(GL_MODELVIEW_MATRIX, self.RM)
+        glGetFloatv(GL_MODELVIEW_MATRIX, self.TM)
+        glGetFloatv(GL_MODELVIEW_MATRIX, self.OM)
         glPopMatrix()
 
     def update(self, delta):
@@ -54,3 +54,16 @@ class Object3D:
         """
         # TODO
         pass
+
+    def __print_matrix__(self, name, m):
+        """
+        Prints matrix 'm' with name 'name'
+
+        :param name: A string. The name of the matrix to print
+        :param m: A 4x4 GL matrix represented as a 1D array
+        """
+        print str(name) + ":"
+        print "[" + str(m[0]) + ", " + str(m[1]) + ", " +str(m[2]) + ", " + str(m[3])
+        print " " + str(m[4]) + ", " + str(m[5]) + ", " +str(m[6]) + ", " + str(m[7])
+        print " " + str(m[8]) + ", " + str(m[9]) + ", " +str(m[10]) + ", " + str(m[11])
+        print " " + str(m[12]) + ", " + str(m[13]) + ", " +str(m[14]) + ", " + str(m[15]) + "]"

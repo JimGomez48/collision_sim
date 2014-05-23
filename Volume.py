@@ -7,7 +7,7 @@ from Object3D import Object3D
 import Colors
 
 
-class Ball(Object3D):
+class Volume(Object3D):
 
     def __init__(self, color):
         Object3D.__init__(self)
@@ -27,9 +27,9 @@ class Ball(Object3D):
         glMatrixMode(GL_MODELVIEW)
         glPushMatrix()
         glMultMatrixf(self.OM)
+        glScalef(1.5, 1.0, 1.0)
         glColor4fv(self.color)
         glMaterialfv(GL_FRONT, GL_SPECULAR, Colors.WHITE)
         glMateriali(GL_FRONT, GL_SHININESS, 60)
-        glutSolidSphere(80, 30, 20)
+        glutWireCube(1000)
         glPopMatrix()
-

@@ -11,4 +11,4 @@ when animating many objects in a scene
 
 RUN INSTRUCTIONS
 ================
-TODO
+python Main.py
