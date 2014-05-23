@@ -1,7 +1,6 @@
 __author__ = 'james'
 
 from pyglet.gl import *
-# from OpenGL.GL import *
 
 
 class Object3D:
@@ -10,20 +9,20 @@ class Object3D:
     this class.
     """
 
-    RM = []     # Temporary Rotation matrix
-    TM = []     # Temporary Translation matrix
-    OM = []     # Orientation i.e Combined Rotation and Translation
+    # RM = []     # Temporary Rotation matrix
+    # TM = []     # Temporary Translation matrix
+    # OM = []     # Orientation i.e Combined Rotation and Translation
 
     def __init__(self):
         glMatrixMode(GL_MODELVIEW)
         glPushMatrix()
         glLoadIdentity()
-        self.RM = glGetDoublev(GL_MODELVIEW_MATRIX)
-        self.TM = glGetDoublev(GL_MODELVIEW_MATRIX)
-        self.OM = glGetDoublev(GL_MODELVIEW_MATRIX)
+        self.RM = glGetFloatv(GL_MODELVIEW_MATRIX, (GLfloat * 16)())
+        self.TM = glGetFloatv(GL_MODELVIEW_MATRIX, (GLfloat * 16)())
+        self.OM = glGetFloatv(GL_MODELVIEW_MATRIX, (GLfloat * 16)())
         glPopMatrix()
 
-    def update(self):
+    def update(self, delta):
         """
         Updates the state of this 3D object
         """
