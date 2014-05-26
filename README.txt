@@ -11,7 +11,7 @@ when animating many objects in a scene
 PREREQUISITES
 =============
 
-On a vanilla Ubuntu install, running the demo will require the following -
+On a vanilla Ubuntu 12.04 install, running the demo will require the following -
 
 sudo apt-get install python-pip
 sudo pip install pyopengl
