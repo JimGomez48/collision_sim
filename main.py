@@ -7,6 +7,7 @@ from OpenGL.GLUT import *
 
 from scene import Scene
 from octtree_bottomup_scene import OctTreeBottomUpScene
+from octtree_topdown_scene import OctTreeTopDownScene
 
 
 # CONSTANTS
@@ -22,7 +23,7 @@ window.set_location(WINDOW_X, WINDOW_Y)
 window.set_caption(WINDOW_NAME)
 
 # scene = Scene()
-scene = OctTreeBottomUpScene()
+scene = OctTreeTopDownScene()
 
 @window.event
 def on_resize(width, height):
@@ -47,6 +48,6 @@ def render(delta):
 
 
 if __name__ == "__main__":
-    clock.schedule_interval(render, 1 / 60.0)  # render at 60 fps
+    clock.schedule_interval(render, 1 / 30.0)  # render at 30 fps
     glutInit(sys.argv)
     pyglet.app.run()
