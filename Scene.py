@@ -34,7 +34,7 @@ class Scene:
         """
         Draw the scene, including all 3D objects
         """
-        self.__set_lighting()
+        self.__set_lighting__()
 
         # set camera position
         glMatrixMode(GL_MODELVIEW)
@@ -52,7 +52,10 @@ class Scene:
         self.__draw_axes__(1500)
         glPopMatrix()
 
-    def __set_lighting(self):
+    def add_object_3d(self, obj):
+        self.objects_3d.append(obj)
+
+    def __set_lighting__(self):
         """
         Provides lighting for the scene. Includes Ambient light and a
         Diffuse/Specular directional light
