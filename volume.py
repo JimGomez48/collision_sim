@@ -18,7 +18,7 @@ class Volume(Object3D):
         glMatrixMode(GL_MODELVIEW)
         glPushMatrix()
         glLoadMatrixf(self.OM)
-        glRotatef(delta * 10, 0, 1, 0)  # Rotate about y-axis
+        #glRotatef(delta * 10, 0, 1, 0)  # Rotate about y-axis
         glGetFloatv(GL_MODELVIEW_MATRIX, self.OM)
         glPopMatrix()
         pass
