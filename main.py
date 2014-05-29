@@ -5,7 +5,8 @@ from pyglet import clock
 from pyglet.gl import *
 from OpenGL.GLUT import *
 
-from Scene import Scene
+from scene import Scene
+from octtree_bottomup_scene import OctTreeBottomUpScene
 
 
 # CONSTANTS
@@ -19,8 +20,9 @@ WINDOW_NAME = "Collision Simulation"
 window = pyglet.window.Window(VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
 window.set_location(WINDOW_X, WINDOW_Y)
 window.set_caption(WINDOW_NAME)
-scene = Scene()
 
+# scene = Scene()
+scene = OctTreeBottomUpScene()
 
 @window.event
 def on_resize(width, height):
@@ -45,6 +47,6 @@ def render(delta):
 
 
 if __name__ == "__main__":
-    clock.schedule_interval(render, 1/120.0)
+    clock.schedule_interval(render, 1 / 60.0)  # render at 60 fps
     glutInit(sys.argv)
     pyglet.app.run()

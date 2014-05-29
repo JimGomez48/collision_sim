@@ -3,7 +3,7 @@ __author__ = 'james'
 from pyglet.gl import *
 
 
-class Object3D:
+class Object3D(object):
     """
     Basic 3D object class. All other 3D object concrete classes should inherit from
     this class.

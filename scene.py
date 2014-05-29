@@ -2,12 +2,12 @@ __author__ = 'james'
 
 from pyglet.gl import *
 
-import Colors
-from Ball import Ball
-from Volume import Volume
+import colors
+from ball import Ball
+from volume import Volume
 
 
-class Scene:
+class Scene(object):
     """
     This class holds the scene of the simulation. It is responsible for holding and
     maintaining the objects within the scene.
@@ -15,12 +15,9 @@ class Scene:
     objects_3d = []
 
     def __init__(self):
-        self.objects_3d.append(Ball(Colors.RED))
-        self.objects_3d.append(Volume(Colors.WHITE))
+        pass
 
     def update(self, delta):
-
-        # print "Delta Time: " + str(delta) + " secs"
         """
         Updates the scene, including all 3D objects
 
@@ -73,14 +70,14 @@ class Scene:
         # set light 0 as diffuse directional light
         diffuse_pos = (gl.GLfloat * 4)(*[1000.0, 1000.0, 500.0, 0.0])
         glLightfv(GL_LIGHT0, GL_POSITION, diffuse_pos)
-        glLightfv(GL_LIGHT0, GL_DIFFUSE, Colors.OFF_WHITE)
+        glLightfv(GL_LIGHT0, GL_DIFFUSE, colors.OFF_WHITE)
         glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 0.1)
         glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.05)
-        glLightfv(GL_LIGHT0, GL_SPECULAR, Colors.WHITE)
+        glLightfv(GL_LIGHT0, GL_SPECULAR, colors.WHITE)
         glEnable(GL_LIGHT0)
 
         # add ambient lighting
-        glLightModelfv(GL_LIGHT_MODEL_AMBIENT, Colors.DARK_GRAY)
+        glLightModelfv(GL_LIGHT_MODEL_AMBIENT, colors.DARK_GRAY)
 
     def __draw_axes__(self, length):
         """
@@ -92,13 +89,13 @@ class Scene:
         glPushMatrix()
         glLineWidth(1)
         glBegin(GL_LINES)
-        glColor4fv(Colors.RED)
+        glColor4fv(colors.RED)
         glVertex3f(-length, 0, 0)
         glVertex3f(length, 0, 0)
-        glColor4fv(Colors.GREEN)
+        glColor4fv(colors.GREEN)
         glVertex3f(0, -length, 0)
         glVertex3f(0, length, 0)
-        glColor4fv(Colors.BLUE)
+        glColor4fv(colors.BLUE)
         glVertex3f(0, 0, -length)
         glVertex3f(0, 0, length)
         glEnd()
