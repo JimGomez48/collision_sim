@@ -1,19 +1,38 @@
 __author__ = 'james'
 
 from pyglet.gl import *
+import math
+
+import colors
 
 
 class Object3D(object):
     """
-    Basic 3D object class. All other 3D object concrete classes should inherit from
-    this class.
+    Basic 3D object class. All other 3D object concrete classes should inherit
+    from this class.
     """
-
-    RM = (GLfloat * 16)()   # Temporary Rotation matrix
-    TM = (GLfloat * 16)()   # Temporary Translation matrix
-    OM = (GLfloat * 16)()   # Orientation i.e Combined Rotation and Translation
+    __Rx = 0    # right x
+    __Ry = 1    # right y
+    __Rz = 2    # right z
+    __Rh = 3    # right homogeneous
+    __Ux = 4    # up x
+    __Uy = 5    # up y
+    __Uz = 6    # up z
+    __Uh = 7    # up homogeneous
+    __Fx = 8    # forward x
+    __Fy = 9    # forward y
+    __Fz = 10   # forward z
+    __Fh = 11   # forward homogeneous
+    __Tx = 12   # translation x
+    __Ty = 13   # translation y
+    __Tz = 14   # translation z
+    __Th = 15   # translation homogeneous
 
     def __init__(self):
+        self.RM = (GLfloat * 16)()  # Stores rotations to be applied to OM
+        self.TM = (GLfloat * 16)()  # Stores translations to be applied to OM
+        self.OM = (GLfloat * 16)()  # The current orientation matrix
+        # load identity matrices into RM, TM, OM
         glMatrixMode(GL_MODELVIEW)
         glPushMatrix()
         glLoadIdentity()
@@ -24,46 +43,154 @@ class Object3D(object):
 
     def update(self, delta):
         """
-        Updates the state of this 3D object
+        Updates the state of this 3D object by updating the OM matrix. By
+        default, applies rotations stored in RM first, then translations stored
+        in TM. Can be overriden in child classes for different behavior
         """
-        pass
+        glMatrixMode(GL_MODELVIEW)
+        glPushMatrix()
+        glLoadMatrixf(self.OM)
+        glMultMatrixf(self.RM)
+        glMultMatrixf(self.TM)
+        glGetFloatv(GL_MODELVIEW_MATRIX, self.OM)
+        self.print_matrix("TM", self.TM)
+        self.__reset_matrix__(self.RM)
+        self.__reset_matrix__(self.TM)
+        glGetFloatv(GL_MODELVIEW_MATRIX, self.OM)
+        glPopMatrix()
+        self.print_matrix("TM", self.TM)
 
     def draw(self):
         """
-        Draws the current state of this 3D object
+        Draws the current state of this 3D object. By default, draws nothing.
+        Override to provide draw behavior
         """
         pass
+
+    def get_right(self):
+        """
+        :return: the right vector of this object as a 3-element list
+        """
+        return [self.OM[self.__Rx], self.OM[self.__Ry], self.OM[self.__Rz]]
+
+    def get_up(self):
+        """
+        :return: the up vector of this object as a 3-element list
+        """
+        return [self.OM[self.__Ux], self.OM[self.__Uy], self.OM[self.__Uz]]
+
+    def get_forward(self):
+        """
+        :return: the forward vector of this object as a 3-element list
+        """
+        return [self.OM[self.__Fx], self.OM[self.__Fy], self.OM[self.__Fz]]
+
+    def get_position(self):
+        """
+        :return: the position of this object as a 3-element list
+        """
+        return [self.OM[self.__Tx], self.OM[self.__Ty], self.OM[self.__Tz]]
+
+    def set_position(self, position):
+        assert len(position) == 3
+        for i in range(3):
+            self.OM[self.__Tx + i] = GLfloat(position[i])
+        self.OM[self.__Th] = 1.0
 
     def rotate(self, angle, axis):
         """
         Rotates this 3D object about the specified axis by the specified angle
 
-        :param angle: A float value. The amount to rotate by
-        :param axis: A 3-element array representing the axis of rotation
+        :param angle: the angle to rotate this object by in degrees
+        :param axis: a vector3. the axis to rotate about
         """
-        # TODO
-        pass
+        assert len(axis) == 3
+        glMatrixMode(GL_MODELVIEW)
+        glPushMatrix()
+        glLoadMatrixf(self.RM)
+        glRotatef(GLfloat(angle),
+                  GLfloat(axis[0]), GLfloat(axis[1]), GLfloat(axis[2]))
+        glGetFloatv(GL_MODELVIEW_MATRIX, self.RM)
+        glPopMatrix()
 
     def translate(self, x, y, z):
         """
-        Translates this 3D object by the specified ammounts
+        Translates this 3D object in world coordinates by the translation vector
 
-        :param x: A float value. The amount to translate along the x-axis
-        :param y: A float value. The amount to translate along the y-axis
-        :param z: A float value. The amount to translate along the z-axis
+        :param trans: a vector3. The amount to translate by in each
+        dimension.
         """
-        # TODO
-        pass
+        glMatrixMode(GL_MODELVIEW)
+        glPushMatrix()
+        glLoadMatrixf(self.TM)
+        glTranslatef(GLfloat(x), GLfloat(y), GLfloat(z))
+        glGetFloatv(GL_MODELVIEW_MATRIX, self.TM)
+        glPopMatrix()
 
-    def __print_matrix__(self, name, m):
+    def print_matrix(self, name, matrix):
         """
-        Prints matrix 'm' with name 'name'
-
-        :param name: A string. The name of the matrix to print
-        :param m: A 4x4 GL matrix represented as a 1D array
+        Prints the specified matrix
         """
         print str(name) + ":"
-        print "[" + str(m[0]) + ", " + str(m[1]) + ", " +str(m[2]) + ", " + str(m[3])
-        print " " + str(m[4]) + ", " + str(m[5]) + ", " +str(m[6]) + ", " + str(m[7])
-        print " " + str(m[8]) + ", " + str(m[9]) + ", " +str(m[10]) + ", " + str(m[11])
-        print " " + str(m[12]) + ", " + str(m[13]) + ", " +str(m[14]) + ", " + str(m[15]) + "]"
+        print "[" + str(matrix[self.__Rx]) + ", " + str(matrix[self.__Ux]) + \
+              ", " + str(matrix[self.__Fx]) + ", " + str(matrix[self.__Tx])
+        print " " + str(matrix[self.__Ry]) + ", " + str(matrix[self.__Uy]) + \
+              ", " + str(matrix[self.__Fy]) + ", " + str(matrix[self.__Ty])
+        print " " + str(matrix[self.__Rz]) + ", " + str(matrix[self.__Uz]) + \
+              ", " + str(matrix[self.__Fz]) + ", " + str(matrix[self.__Tz])
+        print " " + str(matrix[self.__Rh]) + ", " + str(matrix[self.__Uh]) + \
+              ", " + str(matrix[self.__Fh]) + ", " + str(matrix[self.__Th])\
+              + "]"
+
+    def __draw_axes__(self, length):
+        glMatrixMode(GL_MODELVIEW)
+        glPushMatrix()
+        glLineWidth(2)
+        glBegin(GL_LINES)
+        glColor4fv(colors.RED)
+        glVertex3f(0, 0, 0)
+        glVertex3f(length, 0, 0)
+        glColor4fv(colors.GREEN)
+        glVertex3f(0, 0, 0)
+        glVertex3f(0, length, 0)
+        glColor4fv(colors.BLUE)
+        glVertex3f(0, 0, 0)
+        glVertex3f(0, 0, length)
+        glEnd()
+        glLineWidth(1)
+        glPopMatrix()
+
+    def __list_to_glfloat_array__(self, matrix_list):
+        """
+        Converts a normal Python list of to a GLfloat array usable by
+        OpenGL.
+
+        :param matrix_list: the 16 element list to be converted
+        :return: a 4*4 matrix as a GLfloat 1D array
+        """
+        matrix = (GLfloat * len(matrix_list))()
+        for i in range(len(matrix_list)):
+            matrix[i] = GLfloat(matrix_list[i])
+        return matrix
+
+    def __reset_matrix__(self, matrix):
+        """
+        Resets a matrix to the identity matrix
+        :param matrix: the matrix to be reset
+        """
+        glMatrixMode(GL_MODELVIEW)
+        glPushMatrix()
+        glLoadIdentity()
+        glGetFloatv(GL_MODELVIEW_MATRIX, matrix)
+        glPopMatrix()
+
+    def __normalize_vector__(self, v):
+        sum = 0
+        norm = []
+        for i in range(len(v)):
+           sum += v[i] * v[i]
+        mag = math.sqrt(sum)
+        for i in range(len(v)):
+            norm.append(v[i] / mag)
+
+        return norm

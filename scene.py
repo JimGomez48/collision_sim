@@ -38,7 +38,7 @@ class Scene(object):
         glPushMatrix()
         glLoadIdentity()
         gluLookAt(
-            1000, 800, 2000,    # eye
+            500, 300, 2000,    # eye
             0, 0, 0,            # look-at
             0, 1, 0             # up
         )
@@ -46,7 +46,7 @@ class Scene(object):
         # draw objects in the object list
         for o in self.objects_3d:
             o.draw()
-        self.__draw_axes__(1500)
+        # self.__draw_axes__(1500)
         glPopMatrix()
 
     def add_object_3d(self, obj):

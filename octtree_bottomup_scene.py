@@ -3,13 +3,15 @@ __author__ = 'james'
 from scene import Scene
 import colors
 from ball import Ball
+from cube import Cube
 from volume import Volume
 
 
 class OctTreeBottomUpScene(Scene):
     def __init__(self):
         super(OctTreeBottomUpScene, self).__init__()
-        self.add_object_3d(Ball(colors.RED))
+        for i in range(20):
+            self.add_object_3d(Cube(colors.YELLOW))
         self.add_object_3d(Volume(colors.WHITE))
 
     def update(self, delta):
