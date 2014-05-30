@@ -62,12 +62,12 @@ class Object3D(object):
         glMultMatrixf(self.RM)
         glMultMatrixf(self.TM)
         glGetFloatv(GL_MODELVIEW_MATRIX, self.OM)
-        self.print_matrix("TM", self.TM)
+        # self.print_matrix("TM", self.TM)
         self.__reset_matrix__(self.RM)
         self.__reset_matrix__(self.TM)
         glGetFloatv(GL_MODELVIEW_MATRIX, self.OM)
         glPopMatrix()
-        self.print_matrix("TM", self.TM)
+        # self.print_matrix("TM", self.TM)
 
     def draw(self):
         """
