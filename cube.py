@@ -5,6 +5,7 @@ from OpenGL.GLUT import *
 import random
 
 from object_3d import Object3D
+from vector3 import *
 import colors
 
 
@@ -13,22 +14,22 @@ class Cube(Object3D):
     def __init__(self, color):
         super(Cube, self).__init__()
         self.color = color
-        self.axis = [
+        self.axis = Vector3(
             random.random() * random.choice([1, -1]),
             random.random() * random.choice([1, -1]),
             random.random() * random.choice([1, -1])
-        ]
-        self.axis = self.__normalize_vector__(self.axis)
-        self.start = [
+        )
+        self.axis = normalize(self.axis)
+        self.start = Vector3(
             random.randint(-500,500),
             random.randint(-500,500),
             random.randint(-500,500)
-        ]
-        self.velocity = [
+        )
+        self.velocity = Vector3(
             random.random() * random.randint(-200, 200),
             random.random() * random.randint(-200, 200),
             random.random() * random.randint(-200, 200)
-        ]
+        )
         self.rotate_speed = random.randint(-200, 200)
         glMatrixMode(GL_MODELVIEW)
         glPushMatrix()
@@ -42,11 +43,12 @@ class Cube(Object3D):
         glPopMatrix()
 
     def update(self, delta):
-        self.translate(
-            self.velocity[0] * delta,
-            self.velocity[1] * delta,
-            self.velocity[2] * delta
-        )
+        # self.translate(
+        #     self.velocity[0] * delta,
+        #     self.velocity[1] * delta,
+        #     self.velocity[2] * delta
+        # )
+        self.translate_v(self.velocity * delta)
         self.rotate(self.rotate_speed * delta, self.axis)
         super(Cube, self).update(delta)
 

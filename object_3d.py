@@ -1,10 +1,9 @@
 __author__ = 'james'
 
 from pyglet.gl import *
-import math
-import numpy as np
 
 import colors
+from vector3 import *
 
 
 class Object3D(object):
@@ -79,43 +78,45 @@ class Object3D(object):
 
     def get_right(self):
         """
-        :return: the right vector of this object as a 3-element list [x, y, z]
+        :return: the right vector of this object as a Vector3
         """
-        return np.array([self.OM[self.__Rx], self.OM[self.__Ry], self.OM[self.__Rz]])
+        return Vector3(self.OM[self.__Rx], self.OM[self.__Ry], self.OM[self.__Rz])
 
     def get_up(self):
         """
-        :return: the up vector of this object as a 3-element list [x, y, z]
+        :return: the up vector of this object as a Vector3
         """
-        return [self.OM[self.__Ux], self.OM[self.__Uy], self.OM[self.__Uz]]
+        return Vector3(self.OM[self.__Ux], self.OM[self.__Uy], self.OM[self.__Uz])
 
     def get_forward(self):
         """
-        :return: the forward vector of this object as a 3-element list [x, y, z]
+        :return: the forward vector of this object as a Vector3
         """
-        return [self.OM[self.__Fx], self.OM[self.__Fy], self.OM[self.__Fz]]
+        return Vector3(self.OM[self.__Fx], self.OM[self.__Fy], self.OM[self.__Fz])
 
     def get_position(self):
         """
-        :return: the position of this object as a 3-element list [x, y, z]
+        :return: the position of this object as a Point3
         """
-        return [self.OM[self.__Tx], self.OM[self.__Ty], self.OM[self.__Tz]]
+        return Point3(self.OM[self.__Tx], self.OM[self.__Ty], self.OM[self.__Tz])
 
-    def set_position(self, position):
-        assert len(position) == 3
+    def set_position(self, position=Point3()):
+        """
+        :param position: A Point3 specifying the world position to set to
+        """
         for i in range(3):
             self.OM[self.__Tx + i] = GLfloat(position[i])
         self.OM[self.__Th] = 1.0
 
-    def rotate(self, angle, axis):
+    def rotate(self, angle, axis=Vector3(0, 1, 0)):
         """
-        Rotates this 3D object about the specified axis by the specified angle
+        Rotates this 3D object about the specified axis by the specified angle.
+        (Default axis is y-axis)
 
         :param angle: the angle to rotate this object by in degrees
-        :param axis: a vector3. the axis to rotate about
+        :param axis: a Vector3. the axis to rotate about
         NOTE: rotation will not be applied to OM until update() is called
         """
-        assert len(axis) == 3
         glMatrixMode(GL_MODELVIEW)
         glPushMatrix()
         glLoadMatrixf(self.RM)
@@ -123,6 +124,16 @@ class Object3D(object):
                   GLfloat(axis[0]), GLfloat(axis[1]), GLfloat(axis[2]))
         glGetFloatv(GL_MODELVIEW_MATRIX, self.RM)
         glPopMatrix()
+
+    def translate_v(self, trans=Vector3()):
+        """
+        Translates this 3D object in world coordinates by the translation vector
+        (default is 0 translation)
+
+        :param trans: a translation Vector3
+        NOTE: translation will not be applied to OM until update() is called
+        """
+        self.translate(trans[0], trans[1], trans[2])
 
     def translate(self, x, y, z):
         """
@@ -156,6 +167,7 @@ class Object3D(object):
               + "]"
 
     def __draw_axes__(self, length):
+        length = GLfloat(length)
         glMatrixMode(GL_MODELVIEW)
         glPushMatrix()
         glLineWidth(2)
@@ -196,20 +208,3 @@ class Object3D(object):
         glLoadIdentity()
         glGetFloatv(GL_MODELVIEW_MATRIX, matrix)
         glPopMatrix()
-
-    def __normalize_vector__(self, v):
-        """
-        Normalizes a vector such that the magnitude is equal to 1
-
-        :param v: the vector to normalize
-        :return: the normalized vector
-        """
-        sum = 0
-        norm = []
-        for i in range(len(v)):
-            sum += v[i] * v[i]
-        mag = math.sqrt(sum)
-        for i in range(len(v)):
-            norm.append(v[i] / mag)
-
-        return norm
