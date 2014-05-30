@@ -15,6 +15,9 @@ class Vector3(object):
         self.y = float(y)
         self.z = float(z)
 
+    def __len__(self):
+        return 3
+
     def __add__(self, val):
         """A + B both vectors"""
         return Point3(self[0] + val[0], self[1] + val[1], self[2] + val[2])
@@ -136,7 +139,6 @@ def cross(a, b):
         b[0] * a[2] - a[0] * b[2],
         a[0] * b[1] - b[0] * a[1]
     )
-    # return (y1*z2 - y2*z1), (x2*z1 - x1*z2), (x1*y2 - x2*y1)
 
 
 def project_onto(w, v):

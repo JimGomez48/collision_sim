@@ -21,9 +21,9 @@ class Cube(Object3D):
         )
         self.axis = normalize(self.axis)
         self.start = Vector3(
-            random.randint(-500,500),
-            random.randint(-500,500),
-            random.randint(-500,500)
+            random.randint(-500, 500),
+            random.randint(-500, 500),
+            random.randint(-500, 500)
         )
         self.velocity = Vector3(
             random.random() * random.randint(-200, 200),
@@ -43,11 +43,6 @@ class Cube(Object3D):
         glPopMatrix()
 
     def update(self, delta):
-        # self.translate(
-        #     self.velocity[0] * delta,
-        #     self.velocity[1] * delta,
-        #     self.velocity[2] * delta
-        # )
         self.translate_v(self.velocity * delta)
         self.rotate(self.rotate_speed * delta, self.axis)
         super(Cube, self).update(delta)
