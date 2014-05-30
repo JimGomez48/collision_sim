@@ -2,6 +2,7 @@ __author__ = 'james'
 
 from pyglet.gl import *
 import math
+import numpy as np
 
 import colors
 
@@ -11,6 +12,15 @@ class Object3D(object):
     Basic 3D object class. All other 3D object concrete classes should inherit
     from this class.
     """
+    # OpenGL 4x4 orientation matrix for reference
+    #
+    # [ Rx Ux Fx Tx ]
+    # [ Ry Uy Fy Ty ]
+    # [ Rz Uz Fz Tz ]
+    # [ Rh Uh Fh Th ]
+    #
+    # The matrix is stored in memory as a column-wise 1-D array
+
     __Rx = 0    # right x
     __Ry = 1    # right y
     __Rz = 2    # right z
@@ -69,25 +79,25 @@ class Object3D(object):
 
     def get_right(self):
         """
-        :return: the right vector of this object as a 3-element list
+        :return: the right vector of this object as a 3-element list [x, y, z]
         """
-        return [self.OM[self.__Rx], self.OM[self.__Ry], self.OM[self.__Rz]]
+        return np.array([self.OM[self.__Rx], self.OM[self.__Ry], self.OM[self.__Rz]])
 
     def get_up(self):
         """
-        :return: the up vector of this object as a 3-element list
+        :return: the up vector of this object as a 3-element list [x, y, z]
         """
         return [self.OM[self.__Ux], self.OM[self.__Uy], self.OM[self.__Uz]]
 
     def get_forward(self):
         """
-        :return: the forward vector of this object as a 3-element list
+        :return: the forward vector of this object as a 3-element list [x, y, z]
         """
         return [self.OM[self.__Fx], self.OM[self.__Fy], self.OM[self.__Fz]]
 
     def get_position(self):
         """
-        :return: the position of this object as a 3-element list
+        :return: the position of this object as a 3-element list [x, y, z]
         """
         return [self.OM[self.__Tx], self.OM[self.__Ty], self.OM[self.__Tz]]
 
@@ -103,6 +113,7 @@ class Object3D(object):
 
         :param angle: the angle to rotate this object by in degrees
         :param axis: a vector3. the axis to rotate about
+        NOTE: rotation will not be applied to OM until update() is called
         """
         assert len(axis) == 3
         glMatrixMode(GL_MODELVIEW)
@@ -117,8 +128,10 @@ class Object3D(object):
         """
         Translates this 3D object in world coordinates by the translation vector
 
-        :param trans: a vector3. The amount to translate by in each
-        dimension.
+        :param x: the amount to translate along the x-axis
+        :param y: the amount to translate along the y-axis
+        :param z: the amount to translate along the z-axis
+        NOTE: translation will not be applied to OM until update() is called
         """
         glMatrixMode(GL_MODELVIEW)
         glPushMatrix()
@@ -166,7 +179,7 @@ class Object3D(object):
         OpenGL.
 
         :param matrix_list: the 16 element list to be converted
-        :return: a 4*4 matrix as a GLfloat 1D array
+        :return: a 1-D GLfloat array
         """
         matrix = (GLfloat * len(matrix_list))()
         for i in range(len(matrix_list)):
@@ -185,10 +198,16 @@ class Object3D(object):
         glPopMatrix()
 
     def __normalize_vector__(self, v):
+        """
+        Normalizes a vector such that the magnitude is equal to 1
+
+        :param v: the vector to normalize
+        :return: the normalized vector
+        """
         sum = 0
         norm = []
         for i in range(len(v)):
-           sum += v[i] * v[i]
+            sum += v[i] * v[i]
         mag = math.sqrt(sum)
         for i in range(len(v)):
             norm.append(v[i] / mag)

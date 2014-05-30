@@ -11,7 +11,7 @@ class OctTreeBottomUpScene(Scene):
     def __init__(self):
         super(OctTreeBottomUpScene, self).__init__()
         for i in range(20):
-            self.add_object_3d(Cube(colors.YELLOW))
+            self.add_object_3d(Cube(colors.CYAN))
         self.add_object_3d(Volume(colors.WHITE))
 
     def update(self, delta):
