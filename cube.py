@@ -11,6 +11,8 @@ import colors
 
 class Cube(Object3D):
 
+    side = 80
+
     def __init__(self, color):
         super(Cube, self).__init__()
         self.color = color
@@ -54,7 +56,7 @@ class Cube(Object3D):
         glColor4fv(self.color)
         glMaterialfv(GL_FRONT, GL_SPECULAR, colors.WHITE)
         glMateriali(GL_FRONT, GL_SHININESS, 60)
-        glutSolidCube(80)
+        glutSolidCube(self.side)
         # glutSolidSphere(80, 25, 25)
         # self.__draw_axes__(200)
         glPopMatrix()

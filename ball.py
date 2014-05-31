@@ -6,6 +6,10 @@ import colors
 
 class Ball(Object3D):
 
+    radius = 80
+    slices = 30
+    stacks = 20
+
     def __init__(self, color, initxp, inityp, initzp, initxv, inityv, initzv):
         Object3D.__init__(self)
         self.color = color
@@ -39,5 +43,5 @@ class Ball(Object3D):
         self.initzp += self.initzv
         glTranslatef(self.initxp, self.inityp, self.initzp)
         
-        glutSolidSphere(80, 30, 20)
+        glutSolidSphere(radius, slices, stacks)
         glPopMatrix()
