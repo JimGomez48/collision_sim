@@ -50,6 +50,10 @@ class Ball(Object3D):
         self.xv *= -1
         self.yv *= -1
         self.zv *= -1
+        
+        self.xp += 1*self.xv
+        self.yp += 1*self.yv
+        self.zp += 1*self.zv
     
     def xneg(self):
         return self.xp - self.radius/2
