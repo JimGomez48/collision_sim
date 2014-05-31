@@ -43,5 +43,5 @@ class Ball(Object3D):
         self.initzp += self.initzv
         glTranslatef(self.initxp, self.inityp, self.initzp)
         
-        glutSolidSphere(radius, slices, stacks)
+        glutSolidSphere(self.radius, self.slices, self.stacks)
         glPopMatrix()
