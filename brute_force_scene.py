@@ -9,43 +9,43 @@ from pprint import pprint
 import random
 random.seed()
 
-NUM_OBJECTS = 15 # Number of objects in the scene
+NUM_OBJECTS = 500 # Number of objects in the scene
 
 class BruteForceScene(Scene):
 
     PosList = xList = yList = zList = []
     def __init__(self):
         super(BruteForceScene, self).__init__()
-        a1 = random.randint(-500,500)
-        a2 = random.randint(-500,500)
-        a3 = random.randint(-500,500)
-        a4 = random.randint(-1,1) - a1/100
-        a5 = random.randint(-1,1) - a2/100
-        a6 = random.randint(-1,1) - a3/100
-        self.add_object_3d(Ball(colors.RED, a1, a2, a3, a4, a5, a6))
         
-        for i in range(NUM_OBJECTS-1):
-            initxp = random.randint(-500,500)
-            inityp = random.randint(-500,500)
-            initzp = random.randint(-500,500)
-            initxdv = random.randint(-1,1) - initxp/100
-            initydv = random.randint(-1,1) - inityp/100
-            initzdv = random.randint(-1,1) - initzp/100
-            self.add_object_3d(Ball(colors.BLUE, initxp, inityp, initzp, initxdv, initydv, initzdv))
-
-        #self.add_object_3d(Volume(colors.WHITE))
-
+        for i in range(NUM_OBJECTS):
+            while 1==1:
+                #Create randomly positioned ball
+                initxp = random.randint(-500,500)
+                inityp = random.randint(-500,500)
+                initzp = random.randint(-500,500)
+                initxdv = random.randint(-2,2) - initxp/50
+                initydv = random.randint(-2,2) - inityp/50
+                initzdv = random.randint(-2,2) - initzp/50
+                self.add_object_3d(Ball(colors.BLUE, initxp, inityp, initzp, initxdv, initydv, initzdv))
+                
+                #Ensure no collisions with other balls
+                flag_coll = 0
+                for j in range(i-1):
+                    if self.collides(i,j):
+                        self.remove_last_object_3d()
+                        break
+                else:
+                    #This is only executed if the j-for-loop exits normally, e.g. no collisions. Otherwise the infinite while will continue.
+                    break
+    
     def printinfo(self, i):
         return "(" + str(self.objects_3d[i].xp) + " " + str(self.objects_3d[i].yp) + " " + str(self.objects_3d[i].zp) + ") (" + str(self.objects_3d[i].xv) + " " + str(self.objects_3d[i].yv) + " " + str(self.objects_3d[i].zv) + ")"
-
+    
     def update(self, delta):
-        print "0 " + self.printinfo(0)
         # check for collisions
         for i in range(NUM_OBJECTS):
             for j in range(i+1, NUM_OBJECTS):
                 if self.collides(i,j):
-                    if i==0:
-                        print str(j) + " " + self.printinfo(j)
                     self.objects_3d[i].reflect()
                     self.objects_3d[j].reflect()
         

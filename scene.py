@@ -48,10 +48,13 @@ class Scene(object):
             o.draw()
         # self.__draw_axes__(1500)
         glPopMatrix()
-
+    
     def add_object_3d(self, obj):
         self.objects_3d.append(obj)
-
+    
+    def remove_last_object_3d(self):
+        self.objects_3d.pop()
+    
     def __set_lighting__(self):
         """
         Provides lighting for the scene. Includes Ambient light and a
