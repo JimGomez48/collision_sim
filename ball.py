@@ -14,13 +14,13 @@ class Ball(Object3D):
         Object3D.__init__(self)
         self.color = color
         
-        self.initxp = initxp
-        self.inityp = inityp
-        self.initzp = initzp
+        self.xp = initxp
+        self.yp = inityp
+        self.zp = initzp
         
-        self.initxv = initxv
-        self.inityv = inityv
-        self.initzv = initzv
+        self.xv = initxv
+        self.yv = inityv
+        self.zv = initzv
 
     def update(self, delta):
         glMatrixMode(GL_MODELVIEW)
@@ -38,10 +38,35 @@ class Ball(Object3D):
         glColor4fv(self.color)
         glMaterialfv(GL_FRONT, GL_SPECULAR, colors.WHITE)
         glMateriali(GL_FRONT, GL_SHININESS, 60)
-        self.initxp += self.initxv
-        self.inityp += self.inityv
-        self.initzp += self.initzv
-        glTranslatef(self.initxp, self.inityp, self.initzp)
+        self.xp += self.xv
+        self.yp += self.yv
+        self.zp += self.zv
+        glTranslatef(self.xp, self.yp, self.zp)
         
         glutSolidSphere(self.radius, self.slices, self.stacks)
         glPopMatrix()
+    
+    def reflect(self):
+        self.xv *= -1
+        self.yv *= -1
+        self.zv *= -1
+    
+    def xneg(self):
+        return self.xp - self.radius/2
+        
+    def xpos(self):
+        return self.xp + self.radius/2
+    
+    def yneg(self):
+        return self.yp - self.radius/2
+        
+    def ypos(self):
+        return self.yp + self.radius/2
+    
+    def zneg(self):
+        return self.zp - self.radius/2
+        
+    def zpos(self):
+        return self.zp + self.radius/2
+    
+
