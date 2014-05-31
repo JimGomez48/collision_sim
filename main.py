@@ -13,7 +13,7 @@ from OpenGL.GLUT import *
 from octtree_bottomup_scene import OctTreeBottomUpScene
 from octtree_topdown_scene import OctTreeTopDownScene
 from sweep_and_prune_scene import SAPScene
-
+from brute_force_scene import BruteForceScene
 
 # CONSTANTS
 VIEWPORT_WIDTH = 1280
@@ -35,6 +35,8 @@ elif (int(sys.argv[1]) == 2):
     scene = OctTreeBottomUpScene()
 elif (int(sys.argv[1]) == 3):
     scene = SAPScene()
+elif (int(sys.argv[1]) == 4):
+    scene = BruteForceScene()
 
 @window.event
 def on_resize(width, height):
