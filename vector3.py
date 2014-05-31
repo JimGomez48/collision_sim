@@ -84,9 +84,22 @@ class Vector3(object):
         else:
             raise Exception("Can only index 0, 1, or 2")
 
+    def __eq__(self, other):
+        """== if components are within 0.001 of each other"""
+        if math.fabs(self.x - other.x) > 0.001:
+            return False
+        if math.fabs(self.y - other.y) > 0.001:
+            return False
+        if math.fabs(self.z - other.z) > 0.001:
+            return False
+        return True
+
     def __str__(self):
         """to string"""
         return "(" + str(self.x) + ", " + str(self.y) + ", " + str(self.z) + ")"
+
+    def is_zero_vector(self):
+        return self.x == 0 and self.y == 0 and self.z == 0
 Point3 = Vector3
 
 

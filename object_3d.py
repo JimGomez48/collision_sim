@@ -1,6 +1,7 @@
 __author__ = 'james'
 
 from pyglet.gl import *
+import math
 
 import colors
 from vector3 import *
@@ -150,6 +151,39 @@ class Object3D(object):
         glTranslatef(GLfloat(x), GLfloat(y), GLfloat(z))
         glGetFloatv(GL_MODELVIEW_MATRIX, self.TM)
         glPopMatrix()
+
+    def turn_to_face_v(self, direction=Vector3()):
+        """
+        Turn this object so that its forward vector coincides with direction
+
+        :param direction: A Vector3. The direction to turn to
+        """
+        if direction.is_zero_vector():
+            return
+        direction = normalize(direction)
+        forward = self.get_forward()
+        axis = cross(forward, direction)
+        angle = math.degrees(math.acos(dot(forward, direction)))
+        self.rotate(angle=angle, axis=axis)
+
+    def turn_to_face_p(self, target=Point3()):
+        """
+        Turn this object so that its forward vector points to target.
+
+        :param target: A Point3, The point to face towards
+        """
+        # forward = self.get_forward()
+        # target_to_self = normalize(target - self.get_position())
+        # dot_prod = dot(forward, target_to_self)
+        # if
+        # axis = cross(forward, target_to_self)
+        # angle = math.degrees(math.acos(dot))
+        # self.rotate(angle=angle, axis=axis)
+        my_pos = self.get_position()
+        if my_pos == target:
+            return
+        direction = normalize(target - my_pos)
+        self.turn_to_face_v(direction)
 
     def print_matrix(self, name, matrix):
         """
