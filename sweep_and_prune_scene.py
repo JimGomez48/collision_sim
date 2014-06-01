@@ -33,55 +33,35 @@ class SAPScene(Scene):
         # store start and end of object boundaries along each axis, used to determine if collision is occurring
 
         for i in range(NUM_OBJECTS):
-            xListElement = []
-            xListElement.append(i)
-            xListElement.append(self.objects_3d[i].xneg())
-            xListElement.append(self.objects_3d[i].xpos())
-            self.xList.append(xListElement)
-
-        for i in range(NUM_OBJECTS):
-            yListElement = []
-            yListElement.append(i)
-            yListElement.append(self.objects_3d[i].yneg())
-            yListElement.append(self.objects_3d[i].ypos())
-            self.yList.append(yListElement)
+            self.xList.append([i, self.objects_3d[i].xneg(), self.objects_3d[i].xpos()])
         
         for i in range(NUM_OBJECTS):
-            zListElement = []
-            zListElement.append(i)
-            zListElement.append(self.objects_3d[i].zneg())
-            zListElement.append(self.objects_3d[i].zpos())
-            self.zList.append(zListElement)
+            self.yList.append([i, self.objects_3d[i].yneg(), self.objects_3d[i].ypos()])
+        
+        for i in range(NUM_OBJECTS):
+            self.zList.append([i, self.objects_3d[i].zneg(), self.objects_3d[i].zpos()])
 
         #self.add_object_3d(Volume(colors.WHITE))
         
     def update(self, delta):
         
-        # even though the lists are initialized by the constructor, they must be updated each time since object positions change
+        # even though the lists are initialized by the constructor, they must be reinitialized each time since object positions change
 
         # currently collecting start and end of AABB as position (x,y,z) +- radius/2 instead of axial projections
         # store start and end of object boundaries along each axis, used to determine if collision is occurring
 
-        for i in range(NUM_OBJECTS):
-            xListElement = []
-            xListElement.append(i)
-            xListElement.append(self.objects_3d[i].xneg())
-            xListElement.append(self.objects_3d[i].xpos())
-            self.xList.append(xListElement)
+        self.xList = []
+        self.yList = []
+        self.zList = []
 
         for i in range(NUM_OBJECTS):
-            yListElement = []
-            yListElement.append(i)
-            yListElement.append(self.objects_3d[i].yneg())
-            yListElement.append(self.objects_3d[i].ypos())
-            self.yList.append(yListElement)
+            self.xList.append([i, self.objects_3d[i].xneg(), self.objects_3d[i].xpos()])
         
         for i in range(NUM_OBJECTS):
-            zListElement = []
-            zListElement.append(i)
-            zListElement.append(self.objects_3d[i].zneg())
-            zListElement.append(self.objects_3d[i].zpos())
-            self.zList.append(zListElement)
+            self.yList.append([i, self.objects_3d[i].yneg(), self.objects_3d[i].ypos()])
+        
+        for i in range(NUM_OBJECTS):
+            self.zList.append([i, self.objects_3d[i].zneg(), self.objects_3d[i].zpos()])
 
         # sort all 3 lists based on the beginning positions of the AABBs
         self.xList.sort(key = lambda el: el[1])
