@@ -172,13 +172,6 @@ class Object3D(object):
 
         :param target: A Point3, The point to face towards
         """
-        # forward = self.get_forward()
-        # target_to_self = normalize(target - self.get_position())
-        # dot_prod = dot(forward, target_to_self)
-        # if
-        # axis = cross(forward, target_to_self)
-        # angle = math.degrees(math.acos(dot))
-        # self.rotate(angle=angle, axis=axis)
         my_pos = self.get_position()
         if my_pos == target:
             return
