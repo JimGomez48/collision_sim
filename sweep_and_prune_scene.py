@@ -1,6 +1,6 @@
 from scene import Scene
 import colors
-from cube import Cube
+from ball import Ball
 from volume import Volume
 
 from pprint import pprint
@@ -26,79 +26,61 @@ class SAPScene(Scene):
             initxdv = random.randint(-1,1) - initxp/100
             initydv = random.randint(-1,1) - inityp/100
             initzdv = random.randint(-1,1) - initzp/100
-            #self.add_object_3d(Ball(colors.BLUE, initxp, inityp, initzp, initxdv, initydv, initzdv))
-            self.add_object_3d(Cube(colors.BLUE))
+            self.add_object_3d(Ball(colors.BLUE, initxp, inityp, initzp, initxdv, initydv, initzdv))
+            #self.add_object_3d(Cube(colors.BLUE))
 
-        # get a list of the objects' X, Y and Z coordinates + its index and store it in PosList
-        for i in range(NUM_OBJECTS):
-            PosListElement = []
-            PosListElement.append(i)
-            PosListElement.append(self.objects_3d[i].get_position()[0])
-            PosListElement.append(self.objects_3d[i].get_position()[1])
-            PosListElement.append(self.objects_3d[i].get_position()[2])
-            self.PosList.append(PosListElement)
-
-        # currently collecting start and end of AABB as position (x,y,z) +- side/2 instead of axial projections
+        # currently collecting start and end of AABB as position (x,y,z) +- radius/2 instead of axial projections
         # store start and end of object boundaries along each axis, used to determine if collision is occurring
 
         for i in range(NUM_OBJECTS):
             xListElement = []
             xListElement.append(i)
-            xListElement.append(self.objects_3d[i].get_position()[0] - self.objects_3d[i].side/2)
-            xListElement.append(self.objects_3d[i].get_position()[0] + self.objects_3d[i].side/2)
+            xListElement.append(self.objects_3d[i].xneg())
+            xListElement.append(self.objects_3d[i].xpos())
             self.xList.append(xListElement)
 
         for i in range(NUM_OBJECTS):
             yListElement = []
             yListElement.append(i)
-            yListElement.append(self.objects_3d[i].get_position()[1] - self.objects_3d[i].side/2)
-            yListElement.append(self.objects_3d[i].get_position()[1] + self.objects_3d[i].side/2)
+            yListElement.append(self.objects_3d[i].yneg())
+            yListElement.append(self.objects_3d[i].ypos())
             self.yList.append(yListElement)
         
         for i in range(NUM_OBJECTS):
             zListElement = []
             zListElement.append(i)
-            zListElement.append(self.objects_3d[i].get_position()[2] - self.objects_3d[i].side/2)
-            zListElement.append(self.objects_3d[i].get_position()[2] + self.objects_3d[i].side/2)
+            zListElement.append(self.objects_3d[i].zneg())
+            zListElement.append(self.objects_3d[i].zpos())
             self.zList.append(zListElement)
 
-        self.add_object_3d(Volume(colors.WHITE))
+        #self.add_object_3d(Volume(colors.WHITE))
         
     def update(self, delta):
         
         # even though the lists are initialized by the constructor, they must be updated each time since object positions change
 
-        # get a list of the objects' X, Y and Z coordinates + its index and store it in PosList
-        for i in range(NUM_OBJECTS):
-            PosListElement = []
-            PosListElement.append(i)
-            PosListElement.append(self.objects_3d[i].get_position()[0])
-            PosListElement.append(self.objects_3d[i].get_position()[1])
-            PosListElement.append(self.objects_3d[i].get_position()[2])
-            self.PosList.append(PosListElement)
-
-        # currently collecting start and end of AABB as position (x,y,z) +- side/2 instead of axial projections
+        # currently collecting start and end of AABB as position (x,y,z) +- radius/2 instead of axial projections
         # store start and end of object boundaries along each axis, used to determine if collision is occurring
 
         for i in range(NUM_OBJECTS):
             xListElement = []
             xListElement.append(i)
-            xListElement.append(self.objects_3d[i].get_position()[0] - self.objects_3d[i].side/2)
-            xListElement.append(self.objects_3d[i].get_position()[0] + self.objects_3d[i].side/2)
+            xListElement.append(self.objects_3d[i].xneg())
+            xListElement.append(self.objects_3d[i].xpos())
             self.xList.append(xListElement)
 
         for i in range(NUM_OBJECTS):
             yListElement = []
             yListElement.append(i)
-            yListElement.append(self.objects_3d[i].get_position()[1] - self.objects_3d[i].side/2)
-            yListElement.append(self.objects_3d[i].get_position()[1] + self.objects_3d[i].side/2)
+            yListElement.append(self.objects_3d[i].yneg())
+            yListElement.append(self.objects_3d[i].ypos())
             self.yList.append(yListElement)
         
         for i in range(NUM_OBJECTS):
             zListElement = []
             zListElement.append(i)
-            zListElement.append(self.objects_3d[i].get_position()[2] - self.objects_3d[i].side/2)
-            zListElement.append(self.objects_3d[i].get_position()[2] + self.objects_3d[i].side/2)
+            zListElement.append(self.objects_3d[i].zneg())
+            zListElement.append(self.objects_3d[i].zpos())
             self.zList.append(zListElement)
 
         # sort all 3 lists based on the beginning positions of the AABBs
@@ -106,10 +88,40 @@ class SAPScene(Scene):
         self.yList.sort(key = lambda el: el[1])
         self.zList.sort(key = lambda el: el[1])
 
-        # check for collisions
-
-        # if so, react by changing their velocities
-
+        # Now check for collisions
+        potentialCollisions = [] # presence of (i, j) indicates that the pair is likely to collide
+        for i in range(NUM_OBJECTS):
+            j = i+1
+            while j < len(self.xList) and self.xList[i][2] > self.xList[j][1]: # end of obj i > start of obj j implies they are colliding along X axis 
+                potentialCollisions.append([i, j])
+                j += 1
+            j = i+1
+            while j < len(self.yList):
+                if self.yList[i][2] > self.yList[j][1] and [i, j] not in potentialCollisions: # end of obj i > start of obj j implies they are colliding along Y axis
+                    potentialCollisions.append([i, j])
+                elif [i, j] in potentialCollisions: # they don't collide along the Y axis, remove from potential collisions
+                    potentialCollisions.remove([i, j])
+                j += 1
+            j = i+1
+            while j < len(self.zList):
+                if self.zList[i][2] > self.zList[j][1] and [i, j] not in potentialCollisions: # end of obj i > start of obj j implies they are colliding along Z axis
+                    potentialCollisions.append([i, j])
+                elif [i, j] in potentialCollisions: # they don't collide along Z axis, remove from potential collisions
+                    potentialCollisions.remove([i, j])
+                j += 1
+            
+        # Adjust velocities of colliding objects
+        for i in range(len(potentialCollisions)):
+            idx1 = potentialCollisions[i][0]
+            idx2 = potentialCollisions[i][1]
+            if idx1 < len(self.objects_3d):
+                self.objects_3d[idx1].reflect()
+            else:
+                print 'idx1', idx1
+            if idx2 < len(self.objects_3d):
+                self.objects_3d[idx2].reflect()
+            else:
+                print 'idx2', idx2
         # call the super class update method
         super(SAPScene, self).update(delta)
 

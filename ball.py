@@ -56,21 +56,21 @@ class Ball(Object3D):
         self.zp += 1*self.zv
     
     def xneg(self):
-        return self.xp - self.radius/2
+        return self.xp - self.radius
         
     def xpos(self):
-        return self.xp + self.radius/2
+        return self.xp + self.radius
     
     def yneg(self):
-        return self.yp - self.radius/2
+        return self.yp - self.radius
         
     def ypos(self):
-        return self.yp + self.radius/2
+        return self.yp + self.radius
     
     def zneg(self):
-        return self.zp - self.radius/2
+        return self.zp - self.radius
         
     def zpos(self):
-        return self.zp + self.radius/2
+        return self.zp + self.radius
     
 

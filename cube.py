@@ -49,4 +49,3 @@ class Cube(Object3D):
         self.__draw_axes__(100)
         glPopMatrix()
 
-
