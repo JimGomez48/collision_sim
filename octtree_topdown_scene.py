@@ -9,48 +9,74 @@ from pprint import pprint
 import random
 random.seed()
 
-NUM_OBJECTS = 10 # Number of objects in the scene
-OCTREE_MAX_SIZE = 10000
-OCTREE_LEVELS = 2
+NUM_OBJECTS = 40 # Number of objects in the scene, O(N)
+OCTREE_MAX_SIZE = 1280 #Maximum size of the octree root, in pixels, O(M)
+OCTREE_LEVELS = 5 # Number of levels in the octree, O(L)
 
 class OctreeNode:
     xpypzp, xpypzn, xpynzp, xpynzn, xnypzp, xnypzn, xnynzp, xnynzn = None, None, None, None, None, None, None, None
     objs = []
     
-    def fill_octree(self, xmax, xmin, ymax, ymin, zmax, zmin, levels):
+    def get_leaves(self): #OMEGA(N)
+        if not self.xpypzp and not self.xpypzn and not self.xpynzp and not self.xpynzn and not self.xnypzp and not self.xnypzn and not self.xnynzp and not self.xnynzn:
+            return self.objs
+        
+        leaves = []
+        
+        if self.xpypzp:
+            leaves.extend( self.xpypzp.get_leaves() )
+        if self.xpypzn:
+            leaves.extend( self.xpypzn.get_leaves() )
+        if self.xpynzp:
+            leaves.extend( self.xpynzp.get_leaves() )
+        if self.xpynzn:
+            leaves.extend( self.xpynzn.get_leaves() )
+        if self.xnypzp:
+            leaves.extend( self.xnypzp.get_leaves() )
+        if self.xnypzn:
+            leaves.extend( self.xnypzn.get_leaves() )
+        if self.xnynzp:
+            leaves.extend( self.xnynzp.get_leaves() )
+        if self.xnynzn:
+            leaves.extend( self.xnynzn.get_leaves() )
+        
+        return leaves
+    
+    
+    def fill_octree(self, xmax, xmin, ymax, ymin, zmax, zmin, levels): #OMEGA(L*N)
         if levels == 0:
             return
-    
+        
         for o in self.objs:
             xmid = (xmax+xmin)/2
             ymid = (ymax+ymin)/2
             zmid = (zmax+zmin)/2
             
-            if o.xpos > xmid and o.ypos > ymid and o.zpos > zmid:
+            if o.xpos >= xmid and o.ypos >= ymid and o.zpos >= zmid:
                 add_obj_xpypzp(o)
             
-            if o.xpos > xmid and o.ypos > ymid and o.zneg < zmid:
+            if o.xpos >= xmid and o.ypos >= ymid and o.zneg <= zmid:
                 add_obj_xpypzn(o)
             
-            if o.xpos > xmid and o.yneg < ymid and o.zpos > zmid:
+            if o.xpos >= xmid and o.yneg <= ymid and o.zpos >= zmid:
                 add_obj_xpynzp(o)
             
-            if o.xpos > xmid and o.yneg < ymid and o.zneg < zmid:
+            if o.xpos >= xmid and o.yneg <= ymid and o.zneg <= zmid:
                 add_obj_xpynzn(o)
             
-            if o.xneg < xmid and o.ypos > ymid and o.zpos > zmid:
+            if o.xneg <= xmid and o.ypos >= ymid and o.zpos >= zmid:
                 add_obj_xnypzp(o)
             
-            if o.xneg < xmid and o.ypos > ymid and o.zneg < zmid:
+            if o.xneg <= xmid and o.ypos >= ymid and o.zneg <= zmid:
                 add_obj_xnypzn(o)
             
-            if o.xneg < xmid and o.yneg < ymid and o.zpos > zmid:
+            if o.xneg <= xmid and o.yneg <= ymid and o.zpos >= zmid:
                 add_obj_xnynzp(o)
             
-            if o.xneg < xmid and o.yneg < ymid and o.zneg < zmid:
+            if o.xneg <= xmid and o.yneg <= ymid and o.zneg <= zmid:
                 add_obj_xnynzn(o)
         
-        if self.xpypzp != None:
+        if self.xpypzp:
             self.xpypzp.fill_octree(xmax, xmid, ymax, ymid, zmax, zmid, levels-1)
         if self.xpypzn != None:
             self.xpypzn.fill_octree(xmax, xmid, ymax, ymid, zmid, zmin, levels-1)
@@ -107,9 +133,9 @@ class OctreeNode:
             xnynzn = OctreeNode()
         xnynzn.objs.append(obj)
     
-    
-class OctTreeTopDownScene(Scene):
 
+class OctTreeTopDownScene(Scene):
+    
     PosList = xList = yList = zList = []
     def __init__(self):
         super(OctTreeTopDownScene, self).__init__()
@@ -148,13 +174,12 @@ class OctTreeTopDownScene(Scene):
                 octree_root.objs.append( o )
         
         octree_root.fill_octree(OCTREE_MAX_SIZE, -OCTREE_MAX_SIZE, OCTREE_MAX_SIZE, -OCTREE_MAX_SIZE, OCTREE_MAX_SIZE, -OCTREE_MAX_SIZE, OCTREE_LEVELS)
-                
+        
         # check for collisions
-        for i in range(NUM_OBJECTS):
-            for j in range(i+1, NUM_OBJECTS):
-                if self.collides(i,j):
-                    self.objects_3d[i].reflect()
-                    self.objects_3d[j].reflect()
+        for l in octree_root.get_leaves():
+            if len(l) > 1:
+                for o in l:
+                    o.reflect()
         
         # call the super class update method
         super(OctTreeTopDownScene, self).update(delta)
