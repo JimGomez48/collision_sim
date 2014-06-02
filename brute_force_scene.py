@@ -67,8 +67,8 @@ class BruteForceScene(Scene):
                         self.objects_3d[j].reflect()
                         already_collided.add(j)
         
-        print "Collisions: " + str(len(already_collided)) + "    Objects compared: " + str(NUM_OBJECTS*NUM_OBJECTS)
-        print "FPS: " + '%-3s'%str(fps) + "    MIN: " + str(self.fps_min) + "    MAX: " + str(self.fps_max)
+        print "Collisions: " + '%-3s'%str(len(already_collided)) + "    Objects compared: " + str(NUM_OBJECTS*NUM_OBJECTS)
+        #print "FPS: " + '%-3s'%str(fps) + "    MIN: " + str(self.fps_min) + "    MAX: " + str(self.fps_max)
         # call the super class update method
         super(BruteForceScene, self).update(delta)
     

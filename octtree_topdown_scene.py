@@ -254,14 +254,14 @@ class OctTreeTopDownScene(Scene):
                     #else:
                         #print "        Ball " + str( self.objects_3d.index(o) ) + " in list already"
                         
-        if num_of_leaves < self.compared_min:
+        if num_of_leaves < self.compared_min and self.frame > 3:
             self.compared_min = num_of_leaves
             
         if num_of_leaves > self.compared_max:
             self.compared_max = num_of_leaves
         
-        print "Collisions: " + '%-4s'%str(len(already_collided)) + "    Objects compared: " + str(num_of_leaves) + "    Min: " + str(self.compared_min) + "   Max: " + str(self.compared_max)
-        print "FPS: " + '%-3s'%str(fps) + "    MIN: " + str(self.fps_min) + "    MAX: " + str(self.fps_max)
+        print "Collisions: " + '%-4s'%str(len(already_collided)) + "    Objects compared: " + '%-5s'%str(num_of_leaves) + "    Min: " + '%-5s'%str(self.compared_min) + "   Max: " + str(self.compared_max)
+        #print "FPS: " + '%-3s'%str(fps) + "    MIN: " + str(self.fps_min) + "    MAX: " + str(self.fps_max)
         # call the super class update method
         super(OctTreeTopDownScene, self).update(delta)
     
