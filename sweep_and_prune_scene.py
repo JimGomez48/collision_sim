@@ -62,7 +62,8 @@ class SAPScene(Scene):
         xPotentialCollisions = [] # Potential collisions along x axis
         yPotentialCollisions = [] # Potential collisions along y axis
         zPotentialCollisions = [] # Potential collisions along z axis
-        finalPotentialCollisions = [] # Final list of potential collisions
+        PotentialCollisions = [] # Combined list of potential collisions
+        finalPotentialCollisions = [] # Final list of potential collisions, after removing duplicates
 
         for i in range(NUM_OBJECTS):
             j = i-1
@@ -94,36 +95,20 @@ class SAPScene(Scene):
                 zPotentialCollisions.append([self.zList[i][0], self.zList[j][0]]) # append indices of potentially colliding objects
                 j += 1
 
-        finalPotentialCollisions = [[a, b] for [a, b] in xPotentialCollisions if (
-            [a, b] in yPotentialCollisions
-            and [a, b] in zPotentialCollisions)]
+        for [a, b] in xPotentialCollisions:
+            if ([a, b] in yPotentialCollisions or [b, a] in yPotentialCollisions) and ([a, b] in zPotentialCollisions or [b, a] in zPotentialCollisions):
+                PotentialCollisions.append([a, b])
+        #print PotentialCollisions, 'PotentialCollisions'
+        
+        for val in PotentialCollisions:
+            if val not in finalPotentialCollisions and val.reverse() not in finalPotentialCollisions:
+                finalPotentialCollisions.append(val)
 
-        print xPotentialCollisions, 'xPotentialCollisions'
-        print yPotentialCollisions, 'yPotentialCollisions'
-        print zPotentialCollisions, 'zPotentialCollisions'
-        print finalPotentialCollisions, 'finalPotentialCollisions'
+        #print xPotentialCollisions, 'xPotentialCollisions'
+        #print yPotentialCollisions, 'yPotentialCollisions'
+        #print zPotentialCollisions, 'zPotentialCollisions'
+        #print finalPotentialCollisions, 'finalPotentialCollisions'
 
-        '''potentialCollisions = [] # presence of (i, j) indicates that the pair is likely to collide
-        for i in range(NUM_OBJECTS):
-            j = i+1
-            while j < len(self.xList) and self.xList[i][2] > self.xList[j][1]: # end of obj i > start of obj j implies they are colliding along X axis 
-                potentialCollisions.append([i, j])
-                j += 1
-            j = i+1
-            while j < len(self.yList):
-                if self.yList[i][2] > self.yList[j][1] and [i, j] not in potentialCollisions: # end of obj i > start of obj j implies they are colliding along Y axis
-                    potentialCollisions.append([i, j])
-                elif [i, j] in potentialCollisions: # they don't collide along the Y axis, remove from potential collisions
-                    potentialCollisions.remove([i, j])
-                j += 1
-            j = i+1
-            while j < len(self.zList):
-                if self.zList[i][2] > self.zList[j][1] and [i, j] not in potentialCollisions: # end of obj i > start of obj j implies they are colliding along Z axis
-                    potentialCollisions.append([i, j])
-                elif [i, j] in potentialCollisions: # they don't collide along Z axis, remove from potential collisions
-                    potentialCollisions.remove([i, j])
-                j += 1
-        '''    
         # Adjust velocities of colliding objects
         for i in range(len(finalPotentialCollisions)):
             idx1 = finalPotentialCollisions[i][0]
