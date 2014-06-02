@@ -5,8 +5,8 @@ Spring 2014
 James Gomez, Utkarsh Jaiswal, Justin Bass
 
 
-This simulation demonstrates the use of Octrees for efficient collision detection
-when animating many objects in a scene
+This simulation demonstrates the use of different collision detection
+techniques for efficiently animating many objects in a scene
 
 PREREQUISITES
 =============
