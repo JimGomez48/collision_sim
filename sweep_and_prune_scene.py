@@ -45,28 +45,17 @@ class SAPScene(Scene):
         
     def update(self, delta):
         
-        # even though the lists are initialized by the constructor, they must be reinitialized each time since object positions change
-
         # currently collecting start and end of AABB as position (x,y,z) +- radius/2 instead of axial projections
         # store start and end of object boundaries along each axis, used to determine if collision is occurring
 
-        self.xList = []
-        self.yList = []
-        self.zList = []
-
-        for i in range(NUM_OBJECTS):
-            self.xList.append([i, self.objects_3d[i].xneg(), self.objects_3d[i].xpos()])
-        
-        for i in range(NUM_OBJECTS):
-            self.yList.append([i, self.objects_3d[i].yneg(), self.objects_3d[i].ypos()])
-        
-        for i in range(NUM_OBJECTS):
-            self.zList.append([i, self.objects_3d[i].zneg(), self.objects_3d[i].zpos()])
-
-        # sort all 3 lists based on the beginning positions of the AABBs
+        # sort all 3 lists based on the beginning positions of the AABBs since some objects' positions may have changed
         self.xList.sort(key = lambda el: el[1])
         self.yList.sort(key = lambda el: el[1])
         self.zList.sort(key = lambda el: el[1])
+
+        #for i in range(NUM_OBJECTS):
+        #    print self.objects_3d[i]
+        #    print self.xList
 
         # Now check for collisions
         potentialCollisions = [] # presence of (i, j) indicates that the pair is likely to collide
@@ -94,14 +83,9 @@ class SAPScene(Scene):
         for i in range(len(potentialCollisions)):
             idx1 = potentialCollisions[i][0]
             idx2 = potentialCollisions[i][1]
-            if idx1 < len(self.objects_3d):
-                self.objects_3d[idx1].reflect()
-            else:
-                print 'idx1', idx1
-            if idx2 < len(self.objects_3d):
-                self.objects_3d[idx2].reflect()
-            else:
-                print 'idx2', idx2
+            self.objects_3d[idx1].reflect()
+            self.objects_3d[idx2].reflect()
+            
         # call the super class update method
         super(SAPScene, self).update(delta)
 

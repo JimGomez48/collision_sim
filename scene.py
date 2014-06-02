@@ -13,6 +13,7 @@ class Scene(object):
     maintaining the objects within the scene.
     """
     objects_3d = []
+    fps_display = pyglet.clock.ClockDisplay()
 
     def __init__(self):
         pass
@@ -26,6 +27,9 @@ class Scene(object):
         """
         for o in self.objects_3d:
             o.update(delta)
+
+        # display FPS
+        self.fps_display.draw()
 
     def draw(self):
         """
