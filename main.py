@@ -8,7 +8,7 @@ from pyglet.gl import *
 from OpenGL.GLUT import *
 import argparse
 
-from octtree_bottomup_scene import OctTreeBottomUpScene
+from kd_tree_scene import KdTreeScene
 from octtree_topdown_scene import OctTreeTopDownScene
 from sweep_and_prune_scene import SAPScene
 from brute_force_scene import BruteForceScene
@@ -35,7 +35,7 @@ if (args.scene_id == 1):
     scene = OctTreeTopDownScene()
     WINDOW_NAME += "Octree Top-Down"
 elif (args.scene_id == 2):
-    scene = OctTreeBottomUpScene()
+    scene = KdTreeScene()
     WINDOW_NAME += "Octree Bottom-Up"
 elif (args.scene_id == 3):
     scene = SAPScene()

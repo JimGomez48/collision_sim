@@ -10,9 +10,9 @@ from vector3 import *
 import colors
 
 
-class OctTreeBottomUpScene(Scene):
+class KdTreeScene(Scene):
     def __init__(self):
-        super(OctTreeBottomUpScene, self).__init__()
+        super(KdTreeScene, self).__init__()
         for i in range(50):
             position = Point3(
                 random.randint(-700, 700),
@@ -30,8 +30,8 @@ class OctTreeBottomUpScene(Scene):
         # for o in self.objects_3d:
             # o.rotate(100 * delta, self.rot_axis)
             # o.translate_v(self.trans * delta)
-        super(OctTreeBottomUpScene, self).update(delta)
+        super(KdTreeScene, self).update(delta)
 
     def draw(self):
         # call the super class draw method
-        super(OctTreeBottomUpScene, self).draw()
+        super(KdTreeScene, self).draw()
