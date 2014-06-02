@@ -9,15 +9,15 @@ from pprint import pprint
 import random
 random.seed()
 
-NUM_OBJECTS = 500 # Number of objects in the scene
+# NUM_OBJECTS = 500 # Number of objects in the scene
 
 class NoCollisionsScene(Scene):
 
     PosList = xList = yList = zList = []
-    def __init__(self):
-        super(NoCollisionsScene, self).__init__()
+    def __init__(self, num_objects=50):
+        super(NoCollisionsScene, self).__init__(num_objects)
         
-        for i in range(NUM_OBJECTS):
+        for i in range(num_objects):
             #Create randomly positioned ball
             initxp = random.randint(-500,500)
             inityp = random.randint(-500,500)

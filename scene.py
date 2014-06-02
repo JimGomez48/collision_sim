@@ -14,9 +14,10 @@ class Scene(object):
     """
     objects_3d = []
     fps_display = pyglet.clock.ClockDisplay()
+    num_objects = 50
 
-    def __init__(self):
-        pass
+    def __init__(self, num_objects):
+        self.num_objects = num_objects
 
     def update(self, delta):
         """

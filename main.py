@@ -30,35 +30,44 @@ parser.add_argument("scene_id", type=int,
                     choices=range(1, 7),
                     help="1. Top-down Octree 2. K-d Tree 3. Sweep-and-Prune "
                          "4. Brute-Force 5. No Collision 6. Octree Alternate")
+parser.add_argument("num_objects", type=int,
+                    help="The number of objects to render in the scene")
+
 args = parser.parse_args()
 if (args.scene_id == 1):
-    scene = OctTreeTopDownScene()
+    scene = OctTreeTopDownScene(args.num_objects)
     WINDOW_NAME += "Octree Top-Down"
 elif (args.scene_id == 2):
-    scene = KdTreeScene()
+    scene = KdTreeScene(args.num_objects)
     WINDOW_NAME += "Octree Bottom-Up"
 elif (args.scene_id == 3):
-    scene = SAPScene()
+    scene = SAPScene(args.num_objects)
     WINDOW_NAME += "Sweep-and-Prune"
 elif (args.scene_id == 4):
-    scene = BruteForceScene()
+    scene = BruteForceScene(args.num_objects)
     WINDOW_NAME += "Brute-Force"
 elif (args.scene_id == 5):
-    scene = NoCollisionsScene()
+    scene = NoCollisionsScene(args.num_objects)
     WINDOW_NAME += "No Collisions"
 elif (args.scene_id == 6):
-    scene = OctTreeAltScene()
+    scene = OctTreeAltScene(args.num_objects)
     WINDOW_NAME += "Octree Alternate"
 
 # GLOBAL VARS
 window = pyglet.window.Window(VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
 window.set_location(WINDOW_X, WINDOW_Y)
 window.set_caption(WINDOW_NAME)
-label = pyglet.text.Label('FPS: ',
+fps_label = pyglet.text.Label('FPS: ',
                           font_name='Arial',
                           font_size=36,
                           color=[0, 255, 0, 255],
                           x=340, y=-360,
+                          anchor_x='left', anchor_y='bottom')
+num_objs_label = pyglet.text.Label('# Objs: ' + str(scene.num_objects),
+                          font_name='Arial',
+                          font_size=36,
+                          color=[255, 0, 0, 255],
+                          x=-600, y=-360,
                           anchor_x='left', anchor_y='bottom')
 
 @window.event
@@ -76,8 +85,9 @@ def on_draw():
     set_3d()
     scene.draw()
     set_2d()
-    label.text = "FPS: " + str("%.3f" % clock.get_fps())
-    label.draw()
+    num_objs_label.draw()
+    fps_label.text = "FPS: " + str("%.3f" % clock.get_fps())
+    fps_label.draw()
     unset_2d()
 
 

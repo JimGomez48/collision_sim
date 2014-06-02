@@ -9,7 +9,7 @@ import random
 import sys
 random.seed()
 
-NUM_OBJECTS = 25 # Number of objects in the scene
+# NUM_OBJECTS = 25 # Number of objects in the scene
 
 class SAPScene(Scene):
 
@@ -17,9 +17,9 @@ class SAPScene(Scene):
     xList = []
     yList = []
     zList = []
-    def __init__(self):
-        super(SAPScene, self).__init__()
-        for i in range(NUM_OBJECTS):
+    def __init__(self, num_objects=50):
+        super(SAPScene, self).__init__(num_objects)
+        for i in range(self.num_objects):
             initxp = random.randint(-500,500)
             inityp = random.randint(-500,500)
             initzp = random.randint(-500,500)
@@ -32,13 +32,13 @@ class SAPScene(Scene):
         # currently collecting start and end of AABB as position (x,y,z) +- radius/2 instead of axial projections
         # store start and end of object boundaries along each axis, used to determine if collision is occurring
 
-        for i in range(NUM_OBJECTS):
+        for i in range(self.num_objects):
             self.xList.append([i, self.objects_3d[i].xneg(), self.objects_3d[i].xpos()])
         
-        for i in range(NUM_OBJECTS):
+        for i in range(self.num_objects):
             self.yList.append([i, self.objects_3d[i].yneg(), self.objects_3d[i].ypos()])
         
-        for i in range(NUM_OBJECTS):
+        for i in range(self.num_objects):
             self.zList.append([i, self.objects_3d[i].zneg(), self.objects_3d[i].zpos()])
 
         #self.add_object_3d(Volume(colors.WHITE))
@@ -65,7 +65,7 @@ class SAPScene(Scene):
         PotentialCollisions = [] # Combined list of potential collisions
         finalPotentialCollisions = [] # Final list of potential collisions, after removing duplicates
 
-        for i in range(NUM_OBJECTS):
+        for i in range(self.num_objects):
             j = i-1
             while j >= 0 and self.xList[i][1] < self.xList[j][2]: # start of obj i < end of obj j implies they are colliding along X axis
                 xPotentialCollisions.append([self.xList[i][0], self.xList[j][0]]) # append indices of potentially colliding objects
@@ -75,7 +75,7 @@ class SAPScene(Scene):
                 xPotentialCollisions.append([self.xList[i][0], self.xList[j][0]]) # append indices of potentially colliding objects
                 j += 1
 
-        for i in range(NUM_OBJECTS):
+        for i in range(self.num_objects):
             j = i-1
             while j >= 0 and self.yList[i][1] < self.yList[j][2]: # start of obj i < end of obj j implies they are colliding along Y axis
                 yPotentialCollisions.append([self.yList[i][0], self.yList[j][0]]) # append indices of potentially colliding objects
@@ -85,7 +85,7 @@ class SAPScene(Scene):
                 yPotentialCollisions.append([self.yList[i][0], self.yList[j][0]]) # append indices of potentially colliding objects
                 j += 1
 
-        for i in range(NUM_OBJECTS):
+        for i in range(self.num_objects):
             j = i-1
             while j >= 0 and self.zList[i][1] < self.zList[j][2]: # start of obj i < end of obj j implies they are colliding along Z axis
                 zPotentialCollisions.append([self.zList[i][0], self.zList[j][0]]) # append indices of potentially colliding objects

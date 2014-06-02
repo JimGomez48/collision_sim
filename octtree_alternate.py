@@ -9,7 +9,7 @@ from pprint import pprint
 import random
 random.seed()
 
-NUM_OBJECTS = 512 # Number of objects in the scene, O(N)
+# NUM_OBJECTS = 512 # Number of objects in the scene, O(N)
 OCTREE_MAX_SIZE = 300 #Maximum size of the octree root, in pixels, O(M)
 OCTREE_LEVELS = 6 # Number of levels in the octree, O(L)
 BALL_VELOCITY = 5
@@ -181,17 +181,17 @@ class OctreeNode:
 class OctTreeAltScene(Scene):
     
     PosList = xList = yList = zList = []
-    def __init__(self):
-        super(OctTreeAltScene, self).__init__()
+    def __init__(self, num_objects=50):
+        super(OctTreeAltScene, self).__init__(num_objects)
         
         self.fps_max = 0
         self.fps_min = 1000
-        self.compared_min = NUM_OBJECTS*NUM_OBJECTS
+        self.compared_min = self.num_objects ** 2
         self.compared_max = 0
         self.frame = 0
         
-        for i in range(NUM_OBJECTS):
-            while 1==1:
+        for i in range(self.num_objects):
+            while 1 == 1:
                 
                 #Create randomly positioned ball
                 initxp = random.randint(-500,500)

@@ -11,9 +11,9 @@ import colors
 
 
 class KdTreeScene(Scene):
-    def __init__(self):
-        super(KdTreeScene, self).__init__()
-        for i in range(50):
+    def __init__(self, num_objects=50):
+        super(KdTreeScene, self).__init__(num_objects)
+        for i in range(self.num_objects):
             position = Point3(
                 random.randint(-700, 700),
                 random.randint(-500, 500),
