@@ -15,6 +15,7 @@ from octtree_topdown_scene import OctTreeTopDownScene
 from sweep_and_prune_scene import SAPScene
 from brute_force_scene import BruteForceScene
 from no_collisions_scene import NoCollisionsScene
+from octtree_alternate import OctTreeAltScene
 
 # CONSTANTS
 VIEWPORT_WIDTH = 1280
@@ -40,6 +41,8 @@ elif (int(sys.argv[1]) == 4):
     scene = BruteForceScene()
 elif (int(sys.argv[1]) == 5):
     scene = NoCollisionsScene()
+elif (int(sys.argv[1]) == 6):
+    scene = OctTreeAltScene()
 
 @window.event
 def on_resize(width, height):

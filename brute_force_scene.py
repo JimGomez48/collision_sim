@@ -9,7 +9,7 @@ from pprint import pprint
 import random
 random.seed()
 
-NUM_OBJECTS = 500 # Number of objects in the scene
+NUM_OBJECTS = 512 # Number of objects in the scene
 
 class BruteForceScene(Scene):
 
@@ -23,9 +23,9 @@ class BruteForceScene(Scene):
                 initxp = random.randint(-500,500)
                 inityp = random.randint(-500,500)
                 initzp = random.randint(-500,500)
-                initxdv = random.randint(-2,2) - initxp/50
-                initydv = random.randint(-2,2) - inityp/50
-                initzdv = random.randint(-2,2) - initzp/50
+                initxdv = random.randint(-2,2) - initxp/25
+                initydv = random.randint(-2,2) - inityp/25
+                initzdv = random.randint(-2,2) - initzp/25
                 self.add_object_3d(Ball(colors.BLUE, initxp, inityp, initzp, initxdv, initydv, initzdv))
                 
                 #Ensure no collisions with other balls
@@ -43,11 +43,19 @@ class BruteForceScene(Scene):
     
     def update(self, delta):
         # check for collisions
+        already_collided = set([])
         for i in range(NUM_OBJECTS):
             for j in range(i+1, NUM_OBJECTS):
                 if self.collides(i,j):
-                    self.objects_3d[i].reflect()
-                    self.objects_3d[j].reflect()
+                    if not i in already_collided:
+                        self.objects_3d[i].reflect()
+                        already_collided.add(i)
+                    
+                    if not j in already_collided:
+                        self.objects_3d[j].reflect()
+                        already_collided.add(j)
+        
+        print "Collisions: " + str(len(already_collided))
         
         # call the super class update method
         super(BruteForceScene, self).update(delta)

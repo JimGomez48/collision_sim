@@ -9,9 +9,9 @@ from pprint import pprint
 import random
 random.seed()
 
-NUM_OBJECTS = 500 # Number of objects in the scene, O(N)
+NUM_OBJECTS = 512 # Number of objects in the scene, O(N)
 OCTREE_MAX_SIZE = 300 #Maximum size of the octree root, in pixels, O(M)
-OCTREE_LEVELS = 8 # Number of levels in the octree, O(L)
+OCTREE_LEVELS = 6 # Number of levels in the octree, O(L)
 BALL_VELOCITY = 5
 
 class OctreeNode:
@@ -191,9 +191,9 @@ class OctTreeTopDownScene(Scene):
                 initxp = random.randint(-500,500)
                 inityp = random.randint(-500,500)
                 initzp = random.randint(-500,500)
-                initxdv = random.randint(-2,2) - initxp/50
-                initydv = random.randint(-2,2) - inityp/50
-                initzdv = random.randint(-2,2) - initzp/50
+                initxdv = random.randint(-2,2) - initxp/25
+                initydv = random.randint(-2,2) - inityp/25
+                initzdv = random.randint(-2,2) - initzp/25
                 self.add_object_3d(Ball(colors.BLUE, initxp, inityp, initzp, initxdv, initydv, initzdv))
                 
                 #Ensure no collisions with other balls
@@ -224,16 +224,33 @@ class OctTreeTopDownScene(Scene):
         
         # check for collisions        
         already_collided = set([])
+        print "Leaves: " + str(len(octree_root.get_leaves()))
         for l in octree_root.get_leaves():
             if len(l) > 1:
+                #print "    Subleaves: " + str(len(l))
                 for o in l:
                     if not o in already_collided:
-                        #print "Ball " + str( self.objects_3d.index(o) ) + " collided"
+                        #print "        Ball " + str( self.objects_3d.index(o) ) + " collided"
                         already_collided.add( o )
-                        o.reflect()
-        
+                        for o2 in already_collided:
+                            if self.collides_obj(o, o2):
+                                o.reflect()
+                                o2.reflect()
+                    #else:
+                        #print "        Ball " + str( self.objects_3d.index(o) ) + " in list already"
+        print "Collisions: " + str(len(already_collided))
         # call the super class update method
         super(OctTreeTopDownScene, self).update(delta)
+    
+    def collides_obj(self, o1,o2):
+        if o1==o2:
+            return 0
+        
+        if (o1.xneg() > o2.xneg() and o1.xneg() < o2.xpos()) or (o1.xpos() > o2.xneg() and o1.xpos() < o2.xpos()):
+            if (o1.yneg() > o2.yneg() and o1.yneg() < o2.ypos()) or (o1.ypos() > o2.yneg() and o1.ypos() < o2.ypos()):
+                if (o1.zneg() > o2.zneg() and o1.zneg() < o2.zpos()) or (o1.zpos() > o2.zneg() and o1.zpos() < o2.zpos()):
+                    return 1
+        return 0
     
     def collides(self, i,j):
         if i==j:
