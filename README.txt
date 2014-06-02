@@ -20,4 +20,4 @@ sudo pip install numpy
 
 RUN INSTRUCTIONS
 ================
-python Main.py
+python Main.py <scene-number>
