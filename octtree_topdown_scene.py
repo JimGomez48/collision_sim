@@ -9,15 +9,15 @@ from pprint import pprint
 import random
 random.seed()
 
-NUM_OBJECTS = 15 # Number of objects in the scene, O(N)
-OCTREE_MAX_SIZE = 1280 #Maximum size of the octree root, in pixels, O(M)
-OCTREE_LEVELS = 6 # Number of levels in the octree, O(L)
+NUM_OBJECTS = 500 # Number of objects in the scene, O(N)
+OCTREE_MAX_SIZE = 300 #Maximum size of the octree root, in pixels, O(M)
+OCTREE_LEVELS = 8 # Number of levels in the octree, O(L)
 BALL_VELOCITY = 5
 
 class OctreeNode:
     def __init__(self):
         self.xpypzp, self.xpypzn, self.xpynzp, self.xpynzn, self.xnypzp, self.xnypzn, self.xnynzp, self.xnynzn = None, None, None, None, None, None, None, None
-        self.objs = []
+        self.objs = set([])
     
     def get_leaves_inter(self): #OMEGA(N)
         #print "GET LEAVES"
@@ -132,42 +132,50 @@ class OctreeNode:
     def add_obj_xpypzp(self, obj):
         if self.xpypzp == None:
             self.xpypzp = OctreeNode()
-        self.xpypzp.objs.append(obj)
+        if not obj in self.xpypzp.objs:
+            self.xpypzp.objs.add(obj)
     
     def add_obj_xpypzn(self, obj):
         if self.xpypzn == None:
             self.xpypzn = OctreeNode()
-        self.xpypzn.objs.append(obj)
+        if not obj in self.xpypzn.objs:
+            self.xpypzn.objs.add(obj)
     
     def add_obj_xpynzp(self, obj):
         if self.xpynzp == None:
             self.xpynzp = OctreeNode()
-        self.xpynzp.objs.append(obj)
+        if not obj in self.xpynzp.objs:
+            self.xpynzp.objs.add(obj)
     
     def add_obj_xpynzn(self, obj):
         if self.xpynzn == None:
             self.xpynzn = OctreeNode()
-        self.xpynzn.objs.append(obj)
+        if not obj in self.xpynzn.objs:
+            self.xpynzn.objs.add(obj)
     
     def add_obj_xnypzp(self, obj):
         if self.xnypzp == None:
             self.xnypzp = OctreeNode()
-        self.xnypzp.objs.append(obj)
+        if not obj in self.xnypzp.objs:
+            self.xnypzp.objs.add(obj)
     
     def add_obj_xnypzn(self, obj):
         if self.xnypzn == None:
             self.xnypzn = OctreeNode()
-        self.xnypzn.objs.append(obj)
+        if not obj in self.xnypzn.objs:
+            self.xnypzn.objs.add(obj)
     
     def add_obj_xnynzp(self, obj):
         if self.xnynzp == None:
             self.xnynzp = OctreeNode()
-        self.xnynzp.objs.append(obj)
+        if not obj in self.xnynzp.objs:
+            self.xnynzp.objs.add(obj)
     
     def add_obj_xnynzn(self, obj):
         if self.xnynzn == None:
             self.xnynzn = OctreeNode()
-        self.xnynzn.objs.append(obj)
+        if not obj in self.xnynzn.objs:
+            self.xnynzn.objs.add(obj)
     
 
 class OctTreeTopDownScene(Scene):
@@ -176,10 +184,9 @@ class OctTreeTopDownScene(Scene):
     def __init__(self):
         super(OctTreeTopDownScene, self).__init__()
         
-        self.add_object_3d(Ball(colors.RED, 0, 0, 0, 5, 5, 5))
-        
-        for i in range(NUM_OBJECTS-1):
+        for i in range(NUM_OBJECTS):
             while 1==1:
+                
                 #Create randomly positioned ball
                 initxp = random.randint(-500,500)
                 inityp = random.randint(-500,500)
@@ -211,7 +218,7 @@ class OctTreeTopDownScene(Scene):
         
         for o in self.objects_3d:
             if o.xpos() > -OCTREE_MAX_SIZE and o.xneg() < OCTREE_MAX_SIZE and o.ypos() > -OCTREE_MAX_SIZE and o.yneg() < OCTREE_MAX_SIZE and o.zpos() > -OCTREE_MAX_SIZE and o.zneg() < OCTREE_MAX_SIZE:
-                octree_root.objs.append( o )
+                octree_root.objs.add( o )
         
         octree_root.fill_octree(OCTREE_MAX_SIZE, -OCTREE_MAX_SIZE, OCTREE_MAX_SIZE, -OCTREE_MAX_SIZE, OCTREE_MAX_SIZE, -OCTREE_MAX_SIZE, OCTREE_LEVELS)
         
@@ -221,7 +228,7 @@ class OctTreeTopDownScene(Scene):
             if len(l) > 1:
                 for o in l:
                     if not o in already_collided:
-                        print "Ball " + str( self.objects_3d.index(o) ) + " collided"
+                        #print "Ball " + str( self.objects_3d.index(o) ) + " collided"
                         already_collided.add( o )
                         o.reflect()
         
