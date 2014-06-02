@@ -23,12 +23,15 @@ class Ball(Object3D):
         self.zv = initzv
 
     def update(self, delta):
-        glMatrixMode(GL_MODELVIEW)
-        glPushMatrix()
-        glLoadMatrixf(self.OM)
-        #glRotatef(delta * 10, 0, 1, 0)  # Rotate about y-axis
-        glGetFloatv(GL_MODELVIEW_MATRIX, self.OM)
-        glPopMatrix()
+        self.xp += self.xv * delta * 50
+        self.yp += self.yv * delta * 50
+        self.zp += self.zv * delta * 50
+        # glMatrixMode(GL_MODELVIEW)
+        # glPushMatrix()
+        # glLoadMatrixf(self.OM)
+        # glRotatef(delta * 10, 0, 1, 0)  # Rotate about y-axis
+        # glGetFloatv(GL_MODELVIEW_MATRIX, self.OM)
+        # glPopMatrix()
         pass
 
     def draw(self):
@@ -38,9 +41,6 @@ class Ball(Object3D):
         glColor4fv(self.color)
         glMaterialfv(GL_FRONT, GL_SPECULAR, colors.WHITE)
         glMateriali(GL_FRONT, GL_SHININESS, 60)
-        self.xp += self.xv
-        self.yp += self.yv
-        self.zp += self.zv
         glTranslatef(self.xp, self.yp, self.zp)
         
         glutSolidSphere(self.radius, self.slices, self.stacks)

@@ -28,35 +28,43 @@ parser = argparse.ArgumentParser(
 )
 parser.add_argument("scene_id", type=int,
                     choices=range(1, 7),
-                    help="1. Top-down Octree 2. K-d Tree 3. Sweep-and-Prune "
+                    help="1. Octree 2. K-d Tree 3. Sweep-and-Prune "
                          "4. Brute-Force 5. No Collision 6. Octree Alternate")
 parser.add_argument("num_objects", type=int,
                     help="The number of objects to render in the scene")
 
 args = parser.parse_args()
+title = ""
 if (args.scene_id == 1):
     scene = OctTreeTopDownScene(args.num_objects)
-    WINDOW_NAME += "Octree Top-Down"
+    title = "Octree"
 elif (args.scene_id == 2):
     scene = KdTreeScene(args.num_objects)
-    WINDOW_NAME += "Octree Bottom-Up"
+    title = "K-D Tree"
 elif (args.scene_id == 3):
     scene = SAPScene(args.num_objects)
-    WINDOW_NAME += "Sweep-and-Prune"
+    title = "Sweep-and-Prune"
 elif (args.scene_id == 4):
     scene = BruteForceScene(args.num_objects)
-    WINDOW_NAME += "Brute-Force"
+    title = "Brute-Force"
 elif (args.scene_id == 5):
     scene = NoCollisionsScene(args.num_objects)
-    WINDOW_NAME += "No Collisions"
+    title = "No Collisions"
 elif (args.scene_id == 6):
     scene = OctTreeAltScene(args.num_objects)
-    WINDOW_NAME += "Octree Alternate"
+    title = "Octree Alternate"
+WINDOW_NAME += title
 
 # GLOBAL VARS
 window = pyglet.window.Window(VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
 window.set_location(WINDOW_X, WINDOW_Y)
 window.set_caption(WINDOW_NAME)
+title_label = pyglet.text.Label(title,
+                          font_name='Arial',
+                          font_size=36,
+                          color=[255, 255, 255, 255],
+                          x=-600, y=340,
+                          anchor_x='left', anchor_y='bottom')
 fps_label = pyglet.text.Label('FPS: ',
                           font_name='Arial',
                           font_size=36,
@@ -85,6 +93,7 @@ def on_draw():
     set_3d()
     scene.draw()
     set_2d()
+    title_label.draw()
     num_objs_label.draw()
     fps_label.text = "FPS: " + str("%.3f" % clock.get_fps())
     fps_label.draw()

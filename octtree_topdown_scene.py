@@ -197,9 +197,9 @@ class OctTreeTopDownScene(Scene):
                 initxp = random.randint(-500,500)
                 inityp = random.randint(-500,500)
                 initzp = random.randint(-500,500)
-                initxdv = random.randint(-2,2) - initxp/25
-                initydv = random.randint(-2,2) - inityp/25
-                initzdv = random.randint(-2,2) - initzp/25
+                initxdv = random.randint(-2,2) - initxp/50
+                initydv = random.randint(-2,2) - inityp/50
+                initzdv = random.randint(-2,2) - initzp/50
                 self.add_object_3d(Ball(colors.BLUE, initxp, inityp, initzp, initxdv, initydv, initzdv))
                 
                 #Ensure no collisions with other balls
