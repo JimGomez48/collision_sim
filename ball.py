@@ -6,7 +6,7 @@ import colors
 
 class Ball(Object3D):
 
-    radius = 40
+    radius = 30
     slices = 30
     stacks = 20
 
