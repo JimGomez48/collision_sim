@@ -225,8 +225,10 @@ class OctTreeTopDownScene(Scene):
         # check for collisions        
         already_collided = set([])
         print "Leaves: " + str(len(octree_root.get_leaves()))
+        num_of_leaves = 0
         for l in octree_root.get_leaves():
             if len(l) > 1:
+                num_of_leaves += len(l)
                 #print "    Subleaves: " + str(len(l))
                 for o in l:
                     if not o in already_collided:
@@ -238,7 +240,7 @@ class OctTreeTopDownScene(Scene):
                                 o2.reflect()
                     #else:
                         #print "        Ball " + str( self.objects_3d.index(o) ) + " in list already"
-        print "Collisions: " + str(len(already_collided))
+        print "Collisions: " + str(len(already_collided)) + "    Number of objects compared: " + str(num_of_leaves)
         # call the super class update method
         super(OctTreeTopDownScene, self).update(delta)
     
