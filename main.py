@@ -54,30 +54,71 @@ elif (args.scene_id == 6):
 window = pyglet.window.Window(VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
 window.set_location(WINDOW_X, WINDOW_Y)
 window.set_caption(WINDOW_NAME)
+label = pyglet.text.Label('FPS: ',
+                          font_name='Arial',
+                          font_size=36,
+                          color=[0, 255, 0, 255],
+                          x=340, y=-360,
+                          anchor_x='left', anchor_y='bottom')
 
 @window.event
 def on_resize(width, height):
     glViewport(0, 0, width, height)
-    glMatrixMode(gl.GL_PROJECTION)
+    glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
     gluPerspective(45.0, width / float(height), 1.0, 10000)
-    glMatrixMode(gl.GL_MODELVIEW)
+    glMatrixMode(GL_MODELVIEW)
 
 
-def render(delta):
+@window.event
+def on_draw():
     window.clear()
-    # update the scene
+    set_3d()
+    scene.draw()
+    set_2d()
+    label.text = "FPS: " + str("%.3f" % clock.get_fps())
+    label.draw()
+    unset_2d()
+
+
+def update(delta):
     scene.update(float(delta))
 
+
+def set_3d():
     # set up perspective view frustrum
-    glMatrixMode(gl.GL_PROJECTION)
+    glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
     gluPerspective(45.0, VIEWPORT_WIDTH / float(VIEWPORT_HEIGHT), 1.0, 10000)
-    # draw the scene
-    scene.draw()
+    # reset modelview matrix
+    glMatrixMode(GL_MODELVIEW)
+    glLoadIdentity()
+
+
+def set_2d():
+    glDisable(GL_DEPTH_TEST)
+    glDisable(GL_LIGHTING)
+    glDisable(GL_COLOR_MATERIAL)
+    # store the projection matrix to restore later
+    glMatrixMode(GL_PROJECTION)
+    glPushMatrix()
+    # load orthographic projection matrix
+    glLoadIdentity()
+    far = 8192
+    glOrtho(-VIEWPORT_WIDTH / 2., VIEWPORT_WIDTH / 2.,
+            -VIEWPORT_HEIGHT / 2., VIEWPORT_HEIGHT / 2., 0, far)
+    # reset modelview
+    glMatrixMode(GL_MODELVIEW)
+    glLoadIdentity()
+
+
+def unset_2d():
+    # load back the projection matrix saved before
+    glMatrixMode(GL_PROJECTION)
+    glPopMatrix()
 
 
 if __name__ == "__main__":
-    clock.schedule_interval(render, 1 / 60.0)  # render at 30 fps
+    clock.schedule_interval(update, 1 / 60.0)  # update at 60 fps
     glutInit(sys.argv)
     pyglet.app.run()
