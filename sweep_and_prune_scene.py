@@ -9,7 +9,7 @@ import random
 import sys
 random.seed()
 
-NUM_OBJECTS = 15 # Number of objects in the scene
+NUM_OBJECTS = 25 # Number of objects in the scene
 
 class SAPScene(Scene):
 
@@ -58,7 +58,52 @@ class SAPScene(Scene):
         #    print self.xList
 
         # Now check for collisions
-        potentialCollisions = [] # presence of (i, j) indicates that the pair is likely to collide
+        
+        xPotentialCollisions = [] # Potential collisions along x axis
+        yPotentialCollisions = [] # Potential collisions along y axis
+        zPotentialCollisions = [] # Potential collisions along z axis
+        finalPotentialCollisions = [] # Final list of potential collisions
+
+        for i in range(NUM_OBJECTS):
+            j = i-1
+            while j >= 0 and self.xList[i][1] < self.xList[j][2]: # start of obj i < end of obj j implies they are colliding along X axis
+                xPotentialCollisions.append([self.xList[i][0], self.xList[j][0]]) # append indices of potentially colliding objects
+                j -= 1
+            j = i+1
+            while j < len(self.xList) and self.xList[i][2] > self.xList[j][1]: # end of obj i > start of obj j implies they are colliding along X axis
+                xPotentialCollisions.append([self.xList[i][0], self.xList[j][0]]) # append indices of potentially colliding objects
+                j += 1
+
+        for i in range(NUM_OBJECTS):
+            j = i-1
+            while j >= 0 and self.yList[i][1] < self.yList[j][2]: # start of obj i < end of obj j implies they are colliding along Y axis
+                yPotentialCollisions.append([self.yList[i][0], self.yList[j][0]]) # append indices of potentially colliding objects
+                j -= 1
+            j = i+1
+            while j < len(self.yList) and self.yList[i][2] > self.yList[j][1]: # end of obj i > start of obj j implies they are colliding along Y axis
+                yPotentialCollisions.append([self.yList[i][0], self.yList[j][0]]) # append indices of potentially colliding objects
+                j += 1
+
+        for i in range(NUM_OBJECTS):
+            j = i-1
+            while j >= 0 and self.zList[i][1] < self.zList[j][2]: # start of obj i < end of obj j implies they are colliding along Z axis
+                zPotentialCollisions.append([self.zList[i][0], self.zList[j][0]]) # append indices of potentially colliding objects
+                j -= 1
+            j = i+1
+            while j < len(self.zList) and self.zList[i][2] > self.zList[j][1]: # end of obj i > start of obj j implies they are colliding along Z axis
+                zPotentialCollisions.append([self.zList[i][0], self.zList[j][0]]) # append indices of potentially colliding objects
+                j += 1
+
+        finalPotentialCollisions = [[a, b] for [a, b] in xPotentialCollisions if (
+            [a, b] in yPotentialCollisions
+            and [a, b] in zPotentialCollisions)]
+
+        print xPotentialCollisions, 'xPotentialCollisions'
+        print yPotentialCollisions, 'yPotentialCollisions'
+        print zPotentialCollisions, 'zPotentialCollisions'
+        print finalPotentialCollisions, 'finalPotentialCollisions'
+
+        '''potentialCollisions = [] # presence of (i, j) indicates that the pair is likely to collide
         for i in range(NUM_OBJECTS):
             j = i+1
             while j < len(self.xList) and self.xList[i][2] > self.xList[j][1]: # end of obj i > start of obj j implies they are colliding along X axis 
@@ -78,11 +123,11 @@ class SAPScene(Scene):
                 elif [i, j] in potentialCollisions: # they don't collide along Z axis, remove from potential collisions
                     potentialCollisions.remove([i, j])
                 j += 1
-            
+        '''    
         # Adjust velocities of colliding objects
-        for i in range(len(potentialCollisions)):
-            idx1 = potentialCollisions[i][0]
-            idx2 = potentialCollisions[i][1]
+        for i in range(len(finalPotentialCollisions)):
+            idx1 = finalPotentialCollisions[i][0]
+            idx2 = finalPotentialCollisions[i][1]
             self.objects_3d[idx1].reflect()
             self.objects_3d[idx2].reflect()
             
