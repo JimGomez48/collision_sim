@@ -17,6 +17,10 @@ class BruteForceScene(Scene):
     def __init__(self):
         super(BruteForceScene, self).__init__()
         
+        self.fps_max = 0
+        self.fps_min = 1000
+        self.frame = 0
+        
         for i in range(NUM_OBJECTS):
             while 1==1:
                 #Create randomly positioned ball
@@ -42,6 +46,14 @@ class BruteForceScene(Scene):
         return "(" + str(self.objects_3d[i].xp) + " " + str(self.objects_3d[i].yp) + " " + str(self.objects_3d[i].zp) + ") (" + str(self.objects_3d[i].xv) + " " + str(self.objects_3d[i].yv) + " " + str(self.objects_3d[i].zv) + ")"
     
     def update(self, delta):
+        self.frame += 1
+        fps = int(1/delta)
+        if fps > self.fps_max and self.frame > 3:
+            self.fps_max = fps
+            
+        if fps < self.fps_min:
+            self.fps_min = fps
+        
         # check for collisions
         already_collided = set([])
         for i in range(NUM_OBJECTS):
@@ -55,8 +67,8 @@ class BruteForceScene(Scene):
                         self.objects_3d[j].reflect()
                         already_collided.add(j)
         
-        print "Collisions: " + str(len(already_collided)) + "    Number of objects compared: " + str(NUM_OBJECTS*NUM_OBJECTS)
-        
+        print "Collisions: " + str(len(already_collided)) + "    Objects compared: " + str(NUM_OBJECTS*NUM_OBJECTS)
+        print "FPS: " + '%-3s'%str(fps) + "    MIN: " + str(self.fps_min) + "    MAX: " + str(self.fps_max)
         # call the super class update method
         super(BruteForceScene, self).update(delta)
     

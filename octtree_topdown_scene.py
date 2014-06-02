@@ -184,6 +184,12 @@ class OctTreeTopDownScene(Scene):
     def __init__(self):
         super(OctTreeTopDownScene, self).__init__()
         
+        self.fps_max = 0
+        self.fps_min = 1000
+        self.compared_min = NUM_OBJECTS*NUM_OBJECTS
+        self.compared_max = 0
+        self.frame = 0
+        
         for i in range(NUM_OBJECTS):
             while 1==1:
                 
@@ -211,6 +217,13 @@ class OctTreeTopDownScene(Scene):
         return "(" + str(self.objects_3d[i].xp) + " " + str(self.objects_3d[i].yp) + " " + str(self.objects_3d[i].zp) + ") (" + str(self.objects_3d[i].xv) + " " + str(self.objects_3d[i].yv) + " " + str(self.objects_3d[i].zv) + ")"
     
     def update(self, delta):
+        self.frame += 1
+        fps = int(1/delta)
+        if fps > self.fps_max and self.frame > 3:
+            self.fps_max = fps
+            
+        if fps < self.fps_min:
+            self.fps_min = fps
         
         #Create and fill Octree
         octree_root = None
@@ -224,7 +237,7 @@ class OctTreeTopDownScene(Scene):
         
         # check for collisions        
         already_collided = set([])
-        print "Leaves: " + str(len(octree_root.get_leaves()))
+        #print "Leaves: " + str(len(octree_root.get_leaves()))
         num_of_leaves = 0
         for l in octree_root.get_leaves():
             if len(l) > 1:
@@ -240,7 +253,15 @@ class OctTreeTopDownScene(Scene):
                                 o2.reflect()
                     #else:
                         #print "        Ball " + str( self.objects_3d.index(o) ) + " in list already"
-        print "Collisions: " + str(len(already_collided)) + "    Number of objects compared: " + str(num_of_leaves)
+                        
+        if num_of_leaves < self.compared_min:
+            self.compared_min = num_of_leaves
+            
+        if num_of_leaves > self.compared_max:
+            self.compared_max = num_of_leaves
+        
+        print "Collisions: " + '%-4s'%str(len(already_collided)) + "    Objects compared: " + str(num_of_leaves) + "    Min: " + str(self.compared_min) + "   Max: " + str(self.compared_max)
+        print "FPS: " + '%-3s'%str(fps) + "    MIN: " + str(self.fps_min) + "    MAX: " + str(self.fps_max)
         # call the super class update method
         super(OctTreeTopDownScene, self).update(delta)
     
