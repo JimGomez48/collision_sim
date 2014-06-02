@@ -12,7 +12,7 @@ random.seed()
 NUM_OBJECTS = 40 # Number of objects in the scene, O(N)
 OCTREE_MAX_SIZE = 1280 #Maximum size of the octree root, in pixels, O(M)
 OCTREE_LEVELS = 5 # Number of levels in the octree, O(L)
-BALL_VELOCITY = 5
+BALL_VELOCITY = 4
 
 class OctreeNode:
     def __init__(self):
