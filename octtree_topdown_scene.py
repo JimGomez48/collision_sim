@@ -9,10 +9,10 @@ from pprint import pprint
 import random
 random.seed()
 
-NUM_OBJECTS = 40 # Number of objects in the scene, O(N)
+NUM_OBJECTS = 15 # Number of objects in the scene, O(N)
 OCTREE_MAX_SIZE = 1280 #Maximum size of the octree root, in pixels, O(M)
-OCTREE_LEVELS = 5 # Number of levels in the octree, O(L)
-BALL_VELOCITY = 4
+OCTREE_LEVELS = 6 # Number of levels in the octree, O(L)
+BALL_VELOCITY = 5
 
 class OctreeNode:
     def __init__(self):
@@ -22,7 +22,11 @@ class OctreeNode:
     def get_leaves_inter(self): #OMEGA(N)
         #print "GET LEAVES"
         if not self.xpypzp and not self.xpypzn and not self.xpynzp and not self.xpynzn and not self.xnypzp and not self.xnypzn and not self.xnynzp and not self.xnynzn:
-            return self.objs
+            if len(self.objs) > 1:
+                #print str(len(self.objs)) + " objects colliding"
+                return self.objs
+            else:
+                return []
         
         leaves = []
         
@@ -172,18 +176,9 @@ class OctTreeTopDownScene(Scene):
     def __init__(self):
         super(OctTreeTopDownScene, self).__init__()
         
+        self.add_object_3d(Ball(colors.RED, 0, 0, 0, 5, 5, 5))
         
-        self.add_object_3d(Ball(colors.RED, 500, 500, 500, -BALL_VELOCITY, -BALL_VELOCITY, -BALL_VELOCITY))
-        self.add_object_3d(Ball(colors.BLUE, 500, 500, -500, -BALL_VELOCITY, -BALL_VELOCITY, BALL_VELOCITY))
-        self.add_object_3d(Ball(colors.BLUE, 500, -500, 500, -BALL_VELOCITY, BALL_VELOCITY, -BALL_VELOCITY))
-        self.add_object_3d(Ball(colors.BLUE, 500, -500, -500, -BALL_VELOCITY, BALL_VELOCITY, BALL_VELOCITY))
-        self.add_object_3d(Ball(colors.BLUE, -500, 500, 500, BALL_VELOCITY, -BALL_VELOCITY, -BALL_VELOCITY))
-        self.add_object_3d(Ball(colors.BLUE, -500, 500, -500, BALL_VELOCITY, -BALL_VELOCITY, BALL_VELOCITY))
-        self.add_object_3d(Ball(colors.BLUE, -500, -500, 500, BALL_VELOCITY, BALL_VELOCITY, -BALL_VELOCITY))
-        self.add_object_3d(Ball(colors.BLUE, -500, -500, -500, BALL_VELOCITY, BALL_VELOCITY, BALL_VELOCITY))
-        
-        '''
-        for i in range(NUM_OBJECTS):
+        for i in range(NUM_OBJECTS-1):
             while 1==1:
                 #Create randomly positioned ball
                 initxp = random.randint(-500,500)
@@ -203,7 +198,7 @@ class OctTreeTopDownScene(Scene):
                 else:
                     #This is only executed if the j-for-loop exits normally, e.g. no collisions. Otherwise the infinite while will continue.
                     break
-        '''
+        
     
     def printinfo(self, i):
         return "(" + str(self.objects_3d[i].xp) + " " + str(self.objects_3d[i].yp) + " " + str(self.objects_3d[i].zp) + ") (" + str(self.objects_3d[i].xv) + " " + str(self.objects_3d[i].yv) + " " + str(self.objects_3d[i].zv) + ")"
@@ -220,20 +215,23 @@ class OctTreeTopDownScene(Scene):
         
         octree_root.fill_octree(OCTREE_MAX_SIZE, -OCTREE_MAX_SIZE, OCTREE_MAX_SIZE, -OCTREE_MAX_SIZE, OCTREE_MAX_SIZE, -OCTREE_MAX_SIZE, OCTREE_LEVELS)
         
-        # check for collisions
-        #print len( octree_root.get_leaves() )
-        
-        gl = octree_root.get_leaves()
-        for l in gl:
+        # check for collisions        
+        already_collided = set([])
+        for l in octree_root.get_leaves():
             if len(l) > 1:
                 for o in l:
-                    print "Ball " + str( l.index(o) ) + " collided"
-                    o.reflect()
+                    if not o in already_collided:
+                        print "Ball " + str( self.objects_3d.index(o) ) + " collided"
+                        already_collided.add( o )
+                        o.reflect()
         
         # call the super class update method
         super(OctTreeTopDownScene, self).update(delta)
     
     def collides(self, i,j):
+        if i==j:
+            return 0
+        
         o1 = self.objects_3d[i]
         o2 = self.objects_3d[j]
         if (o1.xneg() > o2.xneg() and o1.xneg() < o2.xpos()) or (o1.xpos() > o2.xneg() and o1.xpos() < o2.xpos()):
