@@ -1,7 +1,14 @@
-# Pass a single integer argument (1, 2 or 3) to indicate the scene and collision detection algorithm to be employed -
-# 1 - Top down octree
-# 2 - Bottom up octree
-# 3 - Sweep and prune
+# Pass two command line integer arguments -
+#
+# 1. Scene - 
+#   1 - octree
+#   2 - k-d tree
+#   3 - sweep and prune
+#   4 - brute force
+#   5 - no collisions
+#   6 - octree alternate
+#
+# 2. Number of objects
 
 from pyglet import clock
 from pyglet.gl import *
