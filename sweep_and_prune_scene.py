@@ -3,7 +3,7 @@ import colors
 from ball import Ball
 from volume import Volume
 
-from pprint import pprint
+from sets import Set
 
 import random
 import sys
@@ -59,60 +59,61 @@ class SAPScene(Scene):
 
         # Now check for collisions
         
-        xPotentialCollisions = [] # Potential collisions along x axis
-        yPotentialCollisions = [] # Potential collisions along y axis
-        zPotentialCollisions = [] # Potential collisions along z axis
-        PotentialCollisions = [] # Combined list of potential collisions
-        finalPotentialCollisions = [] # Final list of potential collisions, after removing duplicates
+        xPotentialCollisions = Set() # Potential collisions along x axis
+        yPotentialCollisions = Set() # Potential collisions along y axis
+        zPotentialCollisions = Set() # Potential collisions along z axis
+        finalPotentialCollisions = Set() # Final list of potential collisions
 
         for i in range(self.num_objects):
             j = i-1
             while j >= 0 and self.xList[i][1] < self.xList[j][2]: # start of obj i < end of obj j implies they are colliding along X axis
-                xPotentialCollisions.append([self.xList[i][0], self.xList[j][0]]) # append indices of potentially colliding objects
+                if tuple([self.xList[i][0], self.xList[j][0]]) not in xPotentialCollisions and tuple([self.xList[j][0], self.xList[i][0]]) not in xPotentialCollisions:
+                    xPotentialCollisions.add(tuple([self.xList[i][0], self.xList[j][0]])) # append indices of potentially colliding objects
                 j -= 1
             j = i+1
             while j < len(self.xList) and self.xList[i][2] > self.xList[j][1]: # end of obj i > start of obj j implies they are colliding along X axis
-                xPotentialCollisions.append([self.xList[i][0], self.xList[j][0]]) # append indices of potentially colliding objects
+                if tuple([self.xList[i][0], self.xList[j][0]]) not in xPotentialCollisions and tuple([self.xList[j][0], self.xList[i][0]]) not in xPotentialCollisions:
+                    xPotentialCollisions.add(tuple([self.xList[i][0], self.xList[j][0]])) # append indices of potentially colliding objects
                 j += 1
 
         for i in range(self.num_objects):
             j = i-1
             while j >= 0 and self.yList[i][1] < self.yList[j][2]: # start of obj i < end of obj j implies they are colliding along Y axis
-                yPotentialCollisions.append([self.yList[i][0], self.yList[j][0]]) # append indices of potentially colliding objects
+                if tuple([self.yList[i][0], self.yList[j][0]]) not in yPotentialCollisions and tuple([self.yList[j][0], self.yList[i][0]]) not in yPotentialCollisions:
+                    yPotentialCollisions.add(tuple([self.yList[i][0], self.yList[j][0]])) # append indices of potentially colliding objects
                 j -= 1
             j = i+1
             while j < len(self.yList) and self.yList[i][2] > self.yList[j][1]: # end of obj i > start of obj j implies they are colliding along Y axis
-                yPotentialCollisions.append([self.yList[i][0], self.yList[j][0]]) # append indices of potentially colliding objects
+                if tuple([self.yList[i][0], self.yList[j][0]]) not in yPotentialCollisions and tuple([self.yList[j][0], self.yList[i][0]]) not in yPotentialCollisions:
+                    yPotentialCollisions.add(tuple([self.yList[i][0], self.yList[j][0]])) # append indices of potentially colliding objects
                 j += 1
 
         for i in range(self.num_objects):
             j = i-1
             while j >= 0 and self.zList[i][1] < self.zList[j][2]: # start of obj i < end of obj j implies they are colliding along Z axis
-                zPotentialCollisions.append([self.zList[i][0], self.zList[j][0]]) # append indices of potentially colliding objects
+                if tuple([self.zList[i][0], self.zList[j][0]]) not in zPotentialCollisions and tuple([self.zList[j][0], self.zList[i][0]]) not in zPotentialCollisions:
+                    zPotentialCollisions.add(tuple([self.zList[i][0], self.zList[j][0]])) # append indices of potentially colliding objects
                 j -= 1
             j = i+1
             while j < len(self.zList) and self.zList[i][2] > self.zList[j][1]: # end of obj i > start of obj j implies they are colliding along Z axis
-                zPotentialCollisions.append([self.zList[i][0], self.zList[j][0]]) # append indices of potentially colliding objects
+                if tuple([self.zList[i][0], self.zList[j][0]]) not in zPotentialCollisions and tuple([self.zList[j][0], self.zList[i][0]]) not in zPotentialCollisions:
+                    zPotentialCollisions.add(tuple([self.zList[i][0], self.zList[j][0]])) # append indices of potentially colliding objects
                 j += 1
-
-        for [a, b] in xPotentialCollisions:
-            if ([a, b] in yPotentialCollisions or [b, a] in yPotentialCollisions) and ([a, b] in zPotentialCollisions or [b, a] in zPotentialCollisions):
-                PotentialCollisions.append([a, b])
-        #print PotentialCollisions, 'PotentialCollisions'
-        
-        for val in PotentialCollisions:
-            if val not in finalPotentialCollisions and val.reverse() not in finalPotentialCollisions:
-                finalPotentialCollisions.append(val)
 
         #print xPotentialCollisions, 'xPotentialCollisions'
         #print yPotentialCollisions, 'yPotentialCollisions'
         #print zPotentialCollisions, 'zPotentialCollisions'
+        
+        for x in xPotentialCollisions:
+            if x in yPotentialCollisions and x in zPotentialCollisions:
+                finalPotentialCollisions.add(x)
+
         #print finalPotentialCollisions, 'finalPotentialCollisions'
 
         # Adjust velocities of colliding objects
-        for i in range(len(finalPotentialCollisions)):
-            idx1 = finalPotentialCollisions[i][0]
-            idx2 = finalPotentialCollisions[i][1]
+        for obj in finalPotentialCollisions:
+            idx1 = obj[0]
+            idx2 = obj[1]
             self.objects_3d[idx1].reflect()
             self.objects_3d[idx2].reflect()
             
