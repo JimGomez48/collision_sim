@@ -25,6 +25,7 @@ class Volume(Object3D):
 
     def draw(self):
         glMatrixMode(GL_MODELVIEW)
+        glDisable(GL_LIGHTING)
         glPushMatrix()
         glMultMatrixf(self.OM)
         glScalef(1.5, 1.0, 1.0)
@@ -32,4 +33,5 @@ class Volume(Object3D):
         glMaterialfv(GL_FRONT, GL_SPECULAR, colors.WHITE)
         glMateriali(GL_FRONT, GL_SHININESS, 60)
         glutWireCube(1000)
+        glEnable(GL_LIGHTING)
         glPopMatrix()

@@ -1,7 +1,7 @@
 from pyglet.gl import *
 from OpenGL.GLUT import *
 
-from object_3d import Object3D
+from object_3d import *
 import colors
 
 class Ball(Object3D):
@@ -74,3 +74,37 @@ class Ball(Object3D):
         return self.zp + self.radius
     
 
+class CollidableBall(CollidableObject):
+    slices = 25
+    stacks = 25
+
+    def __init__(self, color, radius=50, start_p=Point3(), start_v=Vector3()):
+        super(CollidableBall, self).__init__(position=start_p, velocity=start_v)
+        self.color = color
+        self.radius = radius
+
+    def update(self, delta):
+        self.translate_v(self.velocity * delta)
+        # check for collisions
+        # resolve via elastic bounce
+        super(CollidableBall, self).update(delta)
+
+    def draw(self):
+        glMatrixMode(GL_MODELVIEW)
+        glPushMatrix()
+        glMultMatrixf(self.OM)
+        glColor4fv(self.color)
+        glMaterialfv(GL_FRONT, GL_SPECULAR, colors.WHITE)
+        glMateriali(GL_FRONT, GL_SHININESS, 60)
+        # glutSolidCube(self.radius)
+        # glutSolidCone(self.radius, self.radius * 1.5, 20, 20)
+        glutSolidSphere(self.radius, self.slices, self.stacks)
+        # self.__draw_axes__(self.radius * 2)
+        glPopMatrix()
+
+    def is_colliding(self, ball):
+        assert isinstance(ball.position, CollidableObject)
+        dist = self.position() - ball.position()
+        if self.radius + ball.radius >= dist:
+            return True
+        return False

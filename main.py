@@ -33,12 +33,19 @@ parser = argparse.ArgumentParser(
                 "detection techniques for efficiently animating many objects "
                 "in a scene"
 )
-parser.add_argument("scene_id", type=int, metavar="scene_id",
-                    choices=range(1, 7),
-                    help="{1} Octree {2} K-d Tree {3} Sweep-and-Prune "
-                         "{4} Brute-Force {5} No Collision {6} Octree Alternate")
-parser.add_argument("num_objects", type=int,
-                    help="The number of objects to render in the scene")
+parser.add_argument(
+    "scene_id",
+    type=int,
+    metavar="scene_id",
+    choices=range(1, 7),
+    help="{1} Octree {2} K-d Tree {3} Sweep-and-Prune {4} Brute-Force "
+         "{5} No Collision {6} Octree Alternate"
+)
+parser.add_argument(
+    "num_objects",
+    type=int,
+    help="The number of objects to render in the scene"
+)
 
 args = parser.parse_args()
 title = ""
@@ -124,7 +131,7 @@ def set_3d():
     # set up perspective view frustrum
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
-    gluPerspective(45.0, VIEWPORT_WIDTH / float(VIEWPORT_HEIGHT), 1.0, 10000)
+    gluPerspective(45.0, VIEWPORT_WIDTH / float(VIEWPORT_HEIGHT), 1.0, 50000)
     # reset modelview matrix
     glMatrixMode(GL_MODELVIEW)
     glLoadIdentity()

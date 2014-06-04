@@ -43,7 +43,7 @@ class Scene(object):
         glPushMatrix()
         glLoadIdentity()
         gluLookAt(
-            500, 300, 2000,    # eye
+            500, 300, 2000,     # eye
             0, 0, 0,            # look-at
             0, 1, 0             # up
         )
@@ -53,7 +53,7 @@ class Scene(object):
             o.draw()
         # self.__draw_axes__(1500)
         glPopMatrix()
-    
+
     def add_object_3d(self, obj):
         self.objects_3d.append(obj)
     
@@ -93,19 +93,21 @@ class Scene(object):
 
         :param length: The length to draw each of the axes
         """
+        glDisable(GL_LIGHTING)
         glMatrixMode(GL_MODELVIEW)
         glPushMatrix()
         glLineWidth(1)
         glBegin(GL_LINES)
         glColor4fv(colors.RED)
-        glVertex3f(-length, 0, 0)
+        glVertex3f(0, 0, 0)
         glVertex3f(length, 0, 0)
         glColor4fv(colors.GREEN)
-        glVertex3f(0, -length, 0)
+        glVertex3f(0, 0, 0)
         glVertex3f(0, length, 0)
         glColor4fv(colors.BLUE)
-        glVertex3f(0, 0, -length)
+        glVertex3f(0, 0, 0)
         glVertex3f(0, 0, length)
         glEnd()
         glLineWidth(1)
         glPopMatrix()
+        glEnable(GL_LIGHTING)

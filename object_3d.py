@@ -95,7 +95,7 @@ class Object3D(object):
         """
         return Vector3(self.OM[self.__Fx], self.OM[self.__Fy], self.OM[self.__Fz])
 
-    def get_position(self):
+    def position(self):
         """
         :return: the position of this object as a Point3
         """
@@ -172,7 +172,7 @@ class Object3D(object):
 
         :param target: A Point3, The point to face towards
         """
-        my_pos = self.get_position()
+        my_pos = self.position()
         if my_pos == target:
             return
         direction = normalize(target - my_pos)
@@ -195,6 +195,7 @@ class Object3D(object):
 
     def __draw_axes__(self, length):
         length = GLfloat(length)
+        glDisable(GL_LIGHTING)
         glMatrixMode(GL_MODELVIEW)
         glPushMatrix()
         glLineWidth(2)
@@ -211,6 +212,7 @@ class Object3D(object):
         glEnd()
         glLineWidth(1)
         glPopMatrix()
+        glEnable(GL_LIGHTING)
 
     def __list_to_glfloat_array__(self, matrix_list):
         """
@@ -235,3 +237,62 @@ class Object3D(object):
         glLoadIdentity()
         glGetFloatv(GL_MODELVIEW_MATRIX, matrix)
         glPopMatrix()
+
+
+class CollidableObject(Object3D):
+    def __init__(self, mass=10, position=Point3(0, 0, 0), velocity=Vector3(0, 0, 0)):
+        super(CollidableObject, self).__init__()
+        self.mass = mass
+        self.translate_v(position)
+        self.velocity = velocity
+
+    def is_colliding(self, obj):
+        """
+        determines whether this object is colliding with object obj. Override in
+        concrete subclass to provide specific implementation.
+
+        :param obj: the object to test collision against
+        :return: True if the objects are colliding, false otherwise.
+        """
+        return False
+
+    def elastic_collide(self, obj):
+        """
+        Resolves collisions in 3-space via elastic collision and the
+        conservation of momentum equations
+
+        :param obj: what this object is colliding with
+        """
+        # CONSERVATION OF MOMENTUM
+        # m1*u1 + m2*u2 = m1*v1 + m2*v2
+        #
+        # CONSERVATION OF ENERGY
+        # (m1*u1^2)/2 + (m2*u2^2)/2 = (m1*v1^2)/2 + (m2*u2^2)/2
+        assert isinstance(obj) is CollidableObject
+        p1 = self.position()
+        p2 = obj.position()
+        v1 = self.velocity
+        v2 = obj.velocity
+        m1 = self.mass
+        m2 = obj.mass
+
+        # angle = math.acos(dot(p1, p2) / (normalize(p1) * normalize(p2)))
+        # angle = math.degrees(angle)
+
+        v1_new = Vector3()
+        v2_new = Vector3()
+
+        v1_new.x = v2.x * (m1 - m2) + 2 * m2 * v2.x
+        v1_new.y = v2.y * (m1 - m2) + 2 * m2 * v2.y
+        v1_new.z = v2.z * (m1 - m2) + 2 * m2 * v2.z
+
+        v2_new.x = v1.x * (m2 - m1) + 2 * m1 * v1.x
+        v2_new.y = v1.y * (m2 - m1) + 2 * m1 * v1.y
+        v2_new.z = v1.z * (m2 - m1) + 2 * m1 * v1.z
+
+        self.velocity = v1
+        obj.velocity = v2
+
+
+
+
