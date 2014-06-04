@@ -103,8 +103,9 @@ class CollidableBall(CollidableObject):
         glPopMatrix()
 
     def is_colliding(self, ball):
-        assert isinstance(ball.position, CollidableObject)
-        dist = self.position() - ball.position()
+        # assert isinstance(ball.position, CollidableObject)
+        dist = distance(self.position(), ball.position())
         if self.radius + ball.radius >= dist:
             return True
+            print "Collision"
         return False
