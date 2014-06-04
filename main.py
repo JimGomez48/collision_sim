@@ -1,15 +1,3 @@
-# Pass two command line integer arguments -
-#
-# 1. Scene - 
-#   1 - octree
-#   2 - k-d tree
-#   3 - sweep and prune
-#   4 - brute force
-#   5 - no collisions
-#   6 - octree alternate
-#
-# 2. Number of objects
-
 from pyglet import clock
 from pyglet.gl import *
 from OpenGL.GLUT import *
@@ -22,10 +10,22 @@ from brute_force_scene import BruteForceScene
 from no_collisions_scene import NoCollisionsScene
 from octtree_alternate import OctTreeAltScene
 
+# Pass two command line integer arguments -
+#
+# 1. Scene -
+# 1 - octree
+# 2 - k-d tree
+#   3 - sweep and prune
+#   4 - brute force
+#   5 - no collisions
+#   6 - octree alternate
+#
+# 2. Number of objects
+
 VIEWPORT_WIDTH = 1280
 VIEWPORT_HEIGHT = 800
-WINDOW_X = 300
-WINDOW_Y = 200
+WINDOW_X = 200
+WINDOW_Y = 100
 WINDOW_NAME = "Collision Simulation: "
 
 parser = argparse.ArgumentParser(
@@ -33,10 +33,10 @@ parser = argparse.ArgumentParser(
                 "detection techniques for efficiently animating many objects "
                 "in a scene"
 )
-parser.add_argument("scene_id", type=int,
+parser.add_argument("scene_id", type=int, metavar="scene_id",
                     choices=range(1, 7),
-                    help="1. Octree 2. K-d Tree 3. Sweep-and-Prune "
-                         "4. Brute-Force 5. No Collision 6. Octree Alternate")
+                    help="{1} Octree {2} K-d Tree {3} Sweep-and-Prune "
+                         "{4} Brute-Force {5} No Collision {6} Octree Alternate")
 parser.add_argument("num_objects", type=int,
                     help="The number of objects to render in the scene")
 
@@ -60,30 +60,39 @@ elif args.scene_id == 5:
 elif args.scene_id == 6:
     scene = OctTreeAltScene(args.num_objects)
     title = "Octree Alternate"
+else:
+    parser.print_usage()
+    raise ValueError("Invalid scene argument")
 WINDOW_NAME += title
 
-# GLOBAL VARS
 window = pyglet.window.Window(VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
 window.set_location(WINDOW_X, WINDOW_Y)
 window.set_caption(WINDOW_NAME)
-title_label = pyglet.text.Label(title,
-                          font_name='Arial',
-                          font_size=36,
-                          color=[255, 255, 255, 255],
-                          x=-600, y=340,
-                          anchor_x='left', anchor_y='bottom')
-fps_label = pyglet.text.Label('FPS: ',
-                          font_name='Arial',
-                          font_size=36,
-                          color=[0, 255, 0, 255],
-                          x=340, y=-360,
-                          anchor_x='left', anchor_y='bottom')
-num_objs_label = pyglet.text.Label('# Objs: ' + str(scene.num_objects),
-                          font_name='Arial',
-                          font_size=36,
-                          color=[255, 0, 0, 255],
-                          x=-600, y=-360,
-                          anchor_x='left', anchor_y='bottom')
+title_label = pyglet.text.Label(
+    text=title,
+    font_name='Arial',
+    font_size=36,
+    color=[255, 255, 255, 255],
+    x=-600, y=330,
+    anchor_x='left', anchor_y='bottom'
+)
+fps_label = pyglet.text.Label(
+    'FPS: ',
+    font_name='Arial',
+    font_size=36,
+    color=[0, 255, 0, 255],
+    x=330, y=-360,
+    anchor_x='left', anchor_y='bottom'
+)
+num_objs_label = pyglet.text.Label(
+    text='# Objs: ' + str(scene.num_objects),
+    font_name='Arial',
+    font_size=36,
+    color=[255, 0, 0, 255],
+    x=-600, y=-360,
+    anchor_x='left', anchor_y='bottom'
+)
+
 
 @window.event
 def on_resize(width, height):
@@ -102,7 +111,7 @@ def on_draw():
     set_2d()
     title_label.draw()
     num_objs_label.draw()
-    fps_label.text = "FPS: " + str("%.3f" % clock.get_fps())
+    fps_label.text = "FPS: " + str("%.2f" % clock.get_fps())
     fps_label.draw()
     unset_2d()
 
