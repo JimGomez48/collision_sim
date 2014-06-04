@@ -78,8 +78,8 @@ class CollidableBall(CollidableObject):
     slices = 25
     stacks = 25
 
-    def __init__(self, color, radius=50, start_p=Point3(), start_v=Vector3()):
-        super(CollidableBall, self).__init__(position=start_p, velocity=start_v)
+    def __init__(self, color, radius=50, mass=10, start_p=Point3(), start_v=Vector3()):
+        super(CollidableBall, self).__init__(mass=mass, position=start_p, velocity=start_v)
         self.color = color
         self.radius = radius
 

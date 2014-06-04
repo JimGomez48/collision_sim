@@ -19,7 +19,13 @@ class KdTreeScene(Scene):
                 random.randint(-500, 500),
                 random.randint(-500, 500)
             )
-            ball = CollidableBall(colors.DARK_BLUE, 40, position, Vector3(0, 100, 300))
+            ball = CollidableBall(
+                color=colors.DARK_BLUE,
+                radius=40,
+                mass=random.randint(5, 20),
+                start_p=position,
+                start_v=Vector3(0, 0, 300)
+            )
             ball.update(1)  # force OM to update before turn_to_face
             ball.turn_to_face_p(origin)
             self.add_object_3d(ball)
