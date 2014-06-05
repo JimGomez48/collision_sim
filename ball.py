@@ -85,6 +85,7 @@ class CollidableBall(CollidableObject):
 
     def update(self, delta):
         self.translate_v(self.velocity * delta)
+        # self.rotate(delta * 20, Vector3(0, 1, 0))
         # check for collisions
         # resolve via elastic bounce
         super(CollidableBall, self).update(delta)
@@ -96,16 +97,15 @@ class CollidableBall(CollidableObject):
         glColor4fv(self.color)
         glMaterialfv(GL_FRONT, GL_SPECULAR, colors.WHITE)
         glMateriali(GL_FRONT, GL_SHININESS, 60)
-        # glutSolidCube(self.radius)
-        # glutSolidCone(self.radius, self.radius * 1.5, 20, 20)
         glutSolidSphere(self.radius, self.slices, self.stacks)
         # self.__draw_axes__(self.radius * 2)
+        # self.draw_velocity(self.radius * 2)
         glPopMatrix()
 
     def is_colliding(self, ball):
         # assert isinstance(ball.position, CollidableObject)
-        dist = distance(self.position(), ball.position())
-        if self.radius + ball.radius >= dist:
-            return True
-            print "Collision"
+        dist_sqr = distance_squared(self.position(), ball.position())
+        if (self.radius + ball.radius) ** 2 >= dist_sqr:
+            if dot(self.velocity, ball.velocity) > 0:
+                return True
         return False

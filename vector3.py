@@ -42,7 +42,9 @@ class Vector3(object):
 
     def __div__(self, val):
         """A / b, where b is a scalar"""
-        return Point3(self[0] / val, self[1] / val, self[2] / val)
+        if val == 0:
+            return Point3(x=float("inf"), y=float("inf"), z=float("inf"))
+        return Point3(x=self[0] / val, y=self[1] / val, z=self[2] / val)
 
     def __mul__(self, val):
         """a * B, where a is a scalar"""
@@ -50,9 +52,12 @@ class Vector3(object):
 
     def __idiv__(self, val):
         """A /= b, where b is a scalar"""
-        self[0] = self[0] / val
-        self[1] = self[1] / val
-        self[2] = self[2] / val
+        if val == 0:
+            self = Point3(x=float("inf"), y=float("inf"), z=float("inf"))
+        else:
+            self[0] = self[0] / val
+            self[1] = self[1] / val
+            self[2] = self[2] / val
         return self
 
     def __imul__(self, val):

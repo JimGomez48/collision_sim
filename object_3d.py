@@ -269,8 +269,9 @@ class CollidableObject(Object3D):
         # CONSERVATION OF ENERGY
         # (m1*u1^2)/2 + (m2*u2^2)/2 = (m1*v1^2)/2 + (m2*u2^2)/2
         # assert isinstance(obj) is CollidableObject
-        p1 = self.position()
-        p2 = obj.position()
+
+        # p1 = self.position()
+        # p2 = obj.position()
         v1 = self.get_forward() * self.velocity.z
         v2 = obj.get_forward() * obj.velocity.z
         m1 = self.mass
@@ -293,6 +294,19 @@ class CollidableObject(Object3D):
         self.velocity = v1
         obj.velocity = v2
 
-
-
-
+    def draw_velocity(self, length):
+        x = GLfloat(normalize(self.velocity).x * length)
+        y = GLfloat(normalize(self.velocity).y * length)
+        z = GLfloat(normalize(self.velocity).z * length)
+        glDisable(GL_LIGHTING)
+        glMatrixMode(GL_MODELVIEW)
+        glPushMatrix()
+        glLineWidth(2)
+        glBegin(GL_LINES)
+        glColor4fv(colors.CYAN)
+        glVertex3f(0, 0, 0)
+        glVertex3f(x, y, z)
+        glEnd()
+        glLineWidth(1)
+        glPopMatrix()
+        glEnable(GL_LIGHTING)
