@@ -85,9 +85,6 @@ class CollidableBall(CollidableObject):
 
     def update(self, delta):
         self.translate_v(self.velocity * delta)
-        # self.rotate(delta * 20, Vector3(0, 1, 0))
-        # check for collisions
-        # resolve via elastic bounce
         super(CollidableBall, self).update(delta)
 
     def draw(self):
