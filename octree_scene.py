@@ -10,8 +10,6 @@ import random
 random.seed()
 
 OCTREE_MAX_SIZE = 300 #Maximum size of the octree root, in pixels, O(M)
-OCTREE_LEVELS = 4 # Number of levels in the octree, O(L)
-BALL_VELOCITY = 5
 
 class OctreeNode:
     def __init__(self):
@@ -175,7 +173,7 @@ class OctreeNode:
 class OctreeScene(Scene):
     
     PosList = xList = yList = zList = []
-    def __init__(self, num_objects=50):
+    def __init__(self, num_objects=50, octree_levels=5):
         super(OctreeScene, self).__init__(num_objects)
 
         self.fps_max = 0
@@ -183,6 +181,9 @@ class OctreeScene(Scene):
         self.compared_min = num_objects ** 2
         self.compared_max = 0
         self.frame = 0
+        self.octree_levels = octree_levels
+        if octree_levels == None:
+            self.octree_levels = 5
         
         for i in range(num_objects):
             while 1==1:
@@ -241,7 +242,7 @@ class OctreeScene(Scene):
         for o in self.objects_3d:
             octree_root.objs.add( o )
         
-        octree_root.fill_octree(ot_max_x, ot_min_x, ot_max_y, ot_min_y, ot_max_z, ot_min_z, OCTREE_LEVELS)
+        octree_root.fill_octree(ot_max_x, ot_min_x, ot_max_y, ot_min_y, ot_max_z, ot_min_z, self.octree_levels)
         
         # check for collisions        
         already_collided = set([])

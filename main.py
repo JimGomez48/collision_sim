@@ -44,7 +44,11 @@ parser.add_argument(
     type=int,
     help="The number of objects to render in the scene"
 )
-
+parser.add_argument(
+    "--octree_levels",
+    type=int,
+    help="Levels in the octree, if that simulation is chosen"
+)
 args = parser.parse_args()
 title = ""
 if args.scene_id == 1:
@@ -54,7 +58,7 @@ elif args.scene_id == 2:
     scene = BruteForceScene(args.num_objects)
     title = "Brute-Force"
 elif args.scene_id == 3:
-    scene = OctreeScene(args.num_objects)
+    scene = OctreeScene(args.num_objects, args.octree_levels)
     title = "Octree"
 elif args.scene_id == 4:
     scene = KdTreeScene(args.num_objects)
