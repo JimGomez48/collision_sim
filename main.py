@@ -3,22 +3,20 @@ from pyglet.gl import *
 from OpenGL.GLUT import *
 import argparse
 
-from kd_tree_scene import KdTreeScene
-from octtree_topdown_scene import OctTreeTopDownScene
-from sweep_and_prune_scene import SAPScene
-from brute_force_scene import BruteForceScene
 from no_collisions_scene import NoCollisionsScene
-from octtree_alternate import OctTreeAltScene
+from brute_force_scene import BruteForceScene
+from octree_scene import OctreeScene
+from kd_tree_scene import KdTreeScene
+from sweep_and_prune_scene import SAPScene
 
 # Pass two command line integer arguments -
 #
 # 1. Scene -
-# 1 - octree
-# 2 - k-d tree
-#   3 - sweep and prune
-#   4 - brute force
-#   5 - no collisions
-#   6 - octree alternate
+# 1 - no collisions
+# 2 - brute force
+# 3 - octree
+# 4 - k-d tree
+# 5 - sweep and prune
 #
 # 2. Number of objects
 
@@ -56,17 +54,14 @@ elif args.scene_id == 2:
     scene = BruteForceScene(args.num_objects)
     title = "Brute-Force"
 elif args.scene_id == 3:
-    scene = SAPScene(args.num_objects)
-    title = "Sweep-and-Prune"
+    scene = OctreeScene(args.num_objects)
+    title = "Octree"
 elif args.scene_id == 4:
     scene = KdTreeScene(args.num_objects)
     title = "K-D Tree"
 elif args.scene_id == 5:
-    scene = OctTreeTopDownScene(args.num_objects)
-    title = "Octree"
-elif args.scene_id == 6:
-    scene = OctTreeAltScene(args.num_objects)
-    title = "Octree Alternate"
+    scene = SAPScene(args.num_objects)
+    title = "Sweep-and-Prune"
 else:
     parser.print_usage()
     raise ValueError("Invalid scene argument")
