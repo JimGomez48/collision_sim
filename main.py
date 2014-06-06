@@ -50,20 +50,20 @@ parser.add_argument(
 args = parser.parse_args()
 title = ""
 if args.scene_id == 1:
-    scene = OctTreeTopDownScene(args.num_objects)
-    title = "Octree"
+    scene = NoCollisionsScene(args.num_objects)
+    title = "No Collisions"
 elif args.scene_id == 2:
-    scene = KdTreeScene(args.num_objects)
-    title = "K-D Tree"
+    scene = BruteForceScene(args.num_objects)
+    title = "Brute-Force"
 elif args.scene_id == 3:
     scene = SAPScene(args.num_objects)
     title = "Sweep-and-Prune"
 elif args.scene_id == 4:
-    scene = BruteForceScene(args.num_objects)
-    title = "Brute-Force"
+    scene = KdTreeScene(args.num_objects)
+    title = "K-D Tree"
 elif args.scene_id == 5:
-    scene = NoCollisionsScene(args.num_objects)
-    title = "No Collisions"
+    scene = OctTreeTopDownScene(args.num_objects)
+    title = "Octree"
 elif args.scene_id == 6:
     scene = OctTreeAltScene(args.num_objects)
     title = "Octree Alternate"
