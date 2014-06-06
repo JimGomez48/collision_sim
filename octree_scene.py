@@ -173,7 +173,7 @@ class OctreeNode:
 class OctreeScene(Scene):
     
     PosList = xList = yList = zList = []
-    def __init__(self, num_objects=50, octree_levels=5):
+    def __init__(self, num_objects=50, octree_levels=5, sim_time=10):
         super(OctreeScene, self).__init__(num_objects)
 
         self.fps_max = 0
@@ -184,6 +184,11 @@ class OctreeScene(Scene):
         self.octree_levels = octree_levels
         if octree_levels == None:
             self.octree_levels = 5
+            
+        self.sim_time = sim_time
+        if sim_time == None:
+            self.sim_time = 10
+        self.SIM_TIME = sim_time
         
         for i in range(num_objects):
             while 1==1:
@@ -212,11 +217,13 @@ class OctreeScene(Scene):
         return "(" + str(self.objects_3d[i].xp) + " " + str(self.objects_3d[i].yp) + " " + str(self.objects_3d[i].zp) + ") (" + str(self.objects_3d[i].xv) + " " + str(self.objects_3d[i].yv) + " " + str(self.objects_3d[i].zv) + ")"
     
     def update(self, delta):
+        self.sim_time -= delta
+    
         self.frame += 1
-        fps = int(1/delta)
+        fps = 1/delta
         if fps > self.fps_max and self.frame > 3:
             self.fps_max = fps
-            
+                
         if fps < self.fps_min:
             self.fps_min = fps
         
@@ -269,6 +276,13 @@ class OctreeScene(Scene):
         
         # call the super class update method
         super(OctreeScene, self).update(delta)
+        
+        if self.sim_time < 0:
+            results_file = open("results.csv", "a")
+            results_file.write("%(a0)d,%(a1)d,%(a2)d,%(a3)d,%(a4)f,%(a5)f,%(a6)d,%(a7)d\n"%
+                {"a0":num_objects,"a1":self.octree_levels, "a2":self.SIM_TIME, "a3":self.frame, "a4":self.fps_min, "a5":self.fps_max, "a6":self.compared_min, "a7":self.compared_max})
+            results_file.close()
+            exit()
     
     def collides_obj(self, o1,o2):
         if o1==o2:
