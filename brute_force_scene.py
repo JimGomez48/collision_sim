@@ -14,12 +14,22 @@ random.seed()
 class BruteForceScene(Scene):
 
     PosList = xList = yList = zList = []
-    def __init__(self, num_objects=50):
+    def __init__(self, num_objects=50, sim_time=10):
         super(BruteForceScene, self).__init__(num_objects)
+        
+        #Initialize fps & frames
+        self.frame = 0
         self.fps_max = 0
         self.fps_min = 1000
-        self.frame = 0
         
+        if sim_time == None:
+            self.sim_time = 0
+            self.SIM_TIME = 0
+        else:
+            self.sim_time = sim_time
+            self.SIM_TIME = sim_time
+        
+        #Initialize scene objects
         for i in range(num_objects):
             while 1==1:
                 #Create randomly positioned ball
@@ -45,11 +55,13 @@ class BruteForceScene(Scene):
         return "(" + str(self.objects_3d[i].xp) + " " + str(self.objects_3d[i].yp) + " " + str(self.objects_3d[i].zp) + ") (" + str(self.objects_3d[i].xv) + " " + str(self.objects_3d[i].yv) + " " + str(self.objects_3d[i].zv) + ")"
     
     def update(self, delta):
+        #Update fps & frames
+        self.sim_time -= delta
         self.frame += 1
-        fps = int(1/delta)
+        fps = 1/delta
         if fps > self.fps_max and self.frame > 3:
             self.fps_max = fps
-            
+                
         if fps < self.fps_min:
             self.fps_min = fps
         
@@ -66,9 +78,14 @@ class BruteForceScene(Scene):
                         self.objects_3d[j].reflect()
                         already_collided.add(j)
         
-        #print "Collisions: " + '%-3s'%str(len(already_collided)) + "    Objects compared: " + str(self.num_objects ** 2)
-        #print "FPS: " + '%-3s'%str(fps) + "    MIN: " + str(self.fps_min) + "    MAX: " + str(self.fps_max)
-        # call the super class update method
+        #If simulation is finished, print out info
+        if self.sim_time < 0 and self.SIM_TIME != 0:
+            results_file = open("results.csv", "a")
+            results_file.write("%(name)s,%(a0)d,%(a1)d,%(a2)d,%(a3)f,%(a4)f,%(a5)d,%(a5)d\n"%
+                {"name":("Brute Force"),"a0":self.num_objects, "a1":self.SIM_TIME, "a2":self.frame, "a3":self.fps_min, "a4":self.fps_max, "a5":self.num_objects ** 2})
+            results_file.close()
+            exit()
+        
         super(BruteForceScene, self).update(delta)
     
     def collides(self, i,j):

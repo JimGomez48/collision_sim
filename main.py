@@ -57,10 +57,10 @@ parser.add_argument(
 args = parser.parse_args()
 title = ""
 if args.scene_id == 1:
-    scene = NoCollisionsScene(args.num_objects)
+    scene = NoCollisionsScene(args.num_objects, args.sim_time)
     title = "No Collisions"
 elif args.scene_id == 2:
-    scene = BruteForceScene(args.num_objects)
+    scene = BruteForceScene(args.num_objects, args.sim_time)
     title = "Brute-Force"
 elif args.scene_id == 3:
     scene = OctreeScene(args.num_objects, args.octree_levels, args.sim_time)

@@ -175,21 +175,28 @@ class OctreeScene(Scene):
     PosList = xList = yList = zList = []
     def __init__(self, num_objects=50, octree_levels=5, sim_time=10):
         super(OctreeScene, self).__init__(num_objects)
-
+        
+        #Initialize fps & frames
+        self.frame = 0
         self.fps_max = 0
         self.fps_min = 1000
+        
+        if sim_time == None:
+            self.sim_time = 0
+            self.SIM_TIME = 0
+        else:
+            self.sim_time = sim_time
+            self.SIM_TIME = sim_time
+        
+        #Initialize octree parameters
         self.compared_min = num_objects ** 2
         self.compared_max = 0
-        self.frame = 0
+        
         self.octree_levels = octree_levels
         if octree_levels == None:
             self.octree_levels = 5
-            
-        self.sim_time = sim_time
-        if sim_time == None:
-            self.sim_time = 10
-        self.SIM_TIME = sim_time
         
+        #Initialize scene objects
         for i in range(num_objects):
             while 1==1:
                 
@@ -217,8 +224,8 @@ class OctreeScene(Scene):
         return "(" + str(self.objects_3d[i].xp) + " " + str(self.objects_3d[i].yp) + " " + str(self.objects_3d[i].zp) + ") (" + str(self.objects_3d[i].xv) + " " + str(self.objects_3d[i].yv) + " " + str(self.objects_3d[i].zv) + ")"
     
     def update(self, delta):
+        #Update fps & frames
         self.sim_time -= delta
-    
         self.frame += 1
         fps = 1/delta
         if fps > self.fps_max and self.frame > 3:
@@ -271,19 +278,19 @@ class OctreeScene(Scene):
         if num_of_leaves > self.compared_max:
             self.compared_max = num_of_leaves
         
-        #print "Collisions: " + '%-4s'%str(len(already_collided)) + "    Objects compared: " + '%-5s'%str(num_of_leaves) + "    Min: " + '%-5s'%str(self.compared_min) + "   Max: " + str(self.compared_max)
-        #print "FPS: " + '%-3s'%str(fps) + "    MIN: " + str(self.fps_min) + "    MAX: " + str(self.fps_max)
+        #If simulation is finished, print out info
+        if self.sim_time < 0 and self.SIM_TIME != 0:
+            results_file = open("results.csv", "a")
+            results_file.write("%(name)s,%(a0)d,%(a1)d,%(a2)d,%(a3)f,%(a4)f,%(a5)d,%(a6)d\n"%
+                {"name":("Octree " + str(self.octree_levels) + " Levels"),"a0":self.num_objects, "a1":self.SIM_TIME, "a2":self.frame, "a3":self.fps_min, "a4":self.fps_max, "a5":self.compared_min, "a6":self.compared_max})
+            results_file.close()
+            exit()
+    
         
         # call the super class update method
         super(OctreeScene, self).update(delta)
         
-        if self.sim_time < 0:
-            results_file = open("results.csv", "a")
-            results_file.write("%(a0)d,%(a1)d,%(a2)d,%(a3)d,%(a4)f,%(a5)f,%(a6)d,%(a7)d\n"%
-                {"a0":num_objects,"a1":self.octree_levels, "a2":self.SIM_TIME, "a3":self.frame, "a4":self.fps_min, "a5":self.fps_max, "a6":self.compared_min, "a7":self.compared_max})
-            results_file.close()
-            exit()
-    
+        
     def collides_obj(self, o1,o2):
         if o1==o2:
             return 0
