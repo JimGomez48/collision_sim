@@ -23,9 +23,9 @@ class Ball(Object3D):
         self.zv = initzv
 
     def update(self, delta):
-        self.xp += self.xv * delta * 50
-        self.yp += self.yv * delta * 50
-        self.zp += self.zv * delta * 50
+        self.xp += self.xv #* delta * 50
+        self.yp += self.yv #* delta * 50
+        self.zp += self.zv #* delta * 50
         # glMatrixMode(GL_MODELVIEW)
         # glPushMatrix()
         # glLoadMatrixf(self.OM)
