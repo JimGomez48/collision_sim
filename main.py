@@ -35,7 +35,7 @@ parser.add_argument(
     "scene_id",
     type=int,
     metavar="scene_id",
-    choices=range(1, 7),
+    choices=range(1, 6),
     help="{1} No Collision {2} Brute-Force {3} Octree {4} K-d Tree "
          "{5} Sweep-and-Prune"
 )
