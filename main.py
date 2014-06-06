@@ -3,22 +3,20 @@ from pyglet.gl import *
 from OpenGL.GLUT import *
 import argparse
 
-from kd_tree_scene import KdTreeScene
-from octtree_topdown_scene import OctTreeTopDownScene
-from sweep_and_prune_scene import SAPScene
-from brute_force_scene import BruteForceScene
 from no_collisions_scene import NoCollisionsScene
-from octtree_alternate import OctTreeAltScene
+from brute_force_scene import BruteForceScene
+from octree_scene import OctreeScene
+from kd_tree_scene import KdTreeScene
+from sweep_and_prune_scene import SAPScene
 
 # Pass two command line integer arguments -
 #
 # 1. Scene -
-# 1 - octree
-# 2 - k-d tree
-#   3 - sweep and prune
-#   4 - brute force
-#   5 - no collisions
-#   6 - octree alternate
+# 1 - no collisions
+# 2 - brute force
+# 3 - octree
+# 4 - k-d tree
+# 5 - sweep and prune
 #
 # 2. Number of objects
 
@@ -37,36 +35,42 @@ parser.add_argument(
     "scene_id",
     type=int,
     metavar="scene_id",
-    choices=range(1, 7),
-    help="{1} Octree {2} K-d Tree {3} Sweep-and-Prune {4} Brute-Force "
-         "{5} No Collision {6} Octree Alternate"
+    choices=range(1, 6),
+    help="{1} No Collision {2} Brute-Force {3} Octree {4} K-d Tree "
+         "{5} Sweep-and-Prune"
 )
 parser.add_argument(
     "num_objects",
     type=int,
     help="The number of objects to render in the scene"
 )
-
+parser.add_argument(
+    "--octree_levels",
+    type=int,
+    help="Levels in the octree, if that simulation is chosen"
+)
+parser.add_argument(
+    "--sim_time",
+    type=int,
+    help="Time to simulate for before stopping"
+)
 args = parser.parse_args()
 title = ""
 if args.scene_id == 1:
-    scene = OctTreeTopDownScene(args.num_objects)
-    title = "Octree"
+    scene = NoCollisionsScene(args.num_objects, args.sim_time)
+    title = "No Collisions"
 elif args.scene_id == 2:
+    scene = BruteForceScene(args.num_objects, args.sim_time)
+    title = "Brute-Force"
+elif args.scene_id == 3:
+    scene = OctreeScene(args.num_objects, args.octree_levels, args.sim_time)
+    title = "Octree"
+elif args.scene_id == 4:
     scene = KdTreeScene(args.num_objects)
     title = "K-D Tree"
-elif args.scene_id == 3:
+elif args.scene_id == 5:
     scene = SAPScene(args.num_objects)
     title = "Sweep-and-Prune"
-elif args.scene_id == 4:
-    scene = BruteForceScene(args.num_objects)
-    title = "Brute-Force"
-elif args.scene_id == 5:
-    scene = NoCollisionsScene(args.num_objects)
-    title = "No Collisions"
-elif args.scene_id == 6:
-    scene = OctTreeAltScene(args.num_objects)
-    title = "Octree Alternate"
 else:
     parser.print_usage()
     raise ValueError("Invalid scene argument")

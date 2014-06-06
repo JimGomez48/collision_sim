@@ -9,21 +9,16 @@ from pprint import pprint
 import random
 random.seed()
 
-# NUM_OBJECTS = 512 # Number of objects in the scene, O(N)
 OCTREE_MAX_SIZE = 300 #Maximum size of the octree root, in pixels, O(M)
-OCTREE_LEVELS = 6 # Number of levels in the octree, O(L)
-BALL_VELOCITY = 5
 
 class OctreeNode:
     def __init__(self):
         self.xpypzp, self.xpypzn, self.xpynzp, self.xpynzn, self.xnypzp, self.xnypzn, self.xnynzp, self.xnynzn = None, None, None, None, None, None, None, None
         self.objs = set([])
     
-    def get_leaves_inter(self): #OMEGA(N)
-        #print "GET LEAVES"
+    def get_leaves_inter(self):
         if not self.xpypzp and not self.xpypzn and not self.xpynzp and not self.xpynzn and not self.xnypzp and not self.xnypzn and not self.xnynzp and not self.xnynzn:
             if len(self.objs) > 1:
-                #print str(len(self.objs)) + " objects colliding"
                 return self.objs
             else:
                 return []
@@ -49,8 +44,7 @@ class OctreeNode:
         
         return leaves
     
-    def get_leaves(self): #OMEGA(N)
-        #print "GET LEAVES"
+    def get_leaves(self):
         if not self.xpypzp and not self.xpypzn and not self.xpynzp and not self.xpynzn and not self.xnypzp and not self.xnypzn and not self.xnynzp and not self.xnynzn:
             return [self.objs]
         
@@ -76,13 +70,11 @@ class OctreeNode:
         return leaves
     
     
-    def fill_octree(self, xmax, xmin, ymax, ymin, zmax, zmin, levels): #OMEGA(L*N)
-        #print "FILL OCTREE"
+    def fill_octree(self, xmax, xmin, ymax, ymin, zmax, zmin, levels):
         if levels == 0 or len(self.objs) <= 1:
             return
         
         for o in self.objs:
-            #print str(levels) + " " + str(self.objs.index(o)) + " " + str( len(self.objs) )
             xmid = (xmax+xmin)/2
             ymid = (ymax+ymin)/2
             zmid = (zmax+zmin)/2
@@ -178,18 +170,33 @@ class OctreeNode:
             self.xnynzn.objs.add(obj)
     
 
-class OctTreeTopDownScene(Scene):
+class OctreeScene(Scene):
     
     PosList = xList = yList = zList = []
-    def __init__(self, num_objects=50):
-        super(OctTreeTopDownScene, self).__init__(num_objects)
+    def __init__(self, num_objects=50, octree_levels=5, sim_time=10):
+        super(OctreeScene, self).__init__(num_objects)
         
+        #Initialize fps & frames
+        self.frame = 0
         self.fps_max = 0
         self.fps_min = 1000
+        
+        if sim_time == None:
+            self.sim_time = 0
+            self.SIM_TIME = 0
+        else:
+            self.sim_time = sim_time
+            self.SIM_TIME = sim_time
+        
+        #Initialize octree parameters
         self.compared_min = num_objects ** 2
         self.compared_max = 0
-        self.frame = 0
         
+        self.octree_levels = octree_levels
+        if octree_levels == None:
+            self.octree_levels = 5
+        
+        #Initialize scene objects
         for i in range(num_objects):
             while 1==1:
                 
@@ -197,9 +204,9 @@ class OctTreeTopDownScene(Scene):
                 initxp = random.randint(-500,500)
                 inityp = random.randint(-500,500)
                 initzp = random.randint(-500,500)
-                initxdv = random.randint(-2,2) - initxp/50
-                initydv = random.randint(-2,2) - inityp/50
-                initzdv = random.randint(-2,2) - initzp/50
+                initxdv = random.randint(-2,2) - initxp/25
+                initydv = random.randint(-2,2) - inityp/25
+                initzdv = random.randint(-2,2) - initzp/25
                 self.add_object_3d(Ball(colors.BLUE, initxp, inityp, initzp, initxdv, initydv, initzdv))
                 
                 #Ensure no collisions with other balls
@@ -217,11 +224,13 @@ class OctTreeTopDownScene(Scene):
         return "(" + str(self.objects_3d[i].xp) + " " + str(self.objects_3d[i].yp) + " " + str(self.objects_3d[i].zp) + ") (" + str(self.objects_3d[i].xv) + " " + str(self.objects_3d[i].yv) + " " + str(self.objects_3d[i].zv) + ")"
     
     def update(self, delta):
+        #Update fps & frames
+        self.sim_time -= delta
         self.frame += 1
-        fps = int(1/delta)
+        fps = 1/delta
         if fps > self.fps_max and self.frame > 3:
             self.fps_max = fps
-            
+                
         if fps < self.fps_min:
             self.fps_min = fps
         
@@ -229,30 +238,39 @@ class OctTreeTopDownScene(Scene):
         octree_root = None
         octree_root = OctreeNode()
         
+        ot_max_x = ot_min_x = ot_max_y = ot_min_y = ot_max_z = ot_min_z = 0
         for o in self.objects_3d:
-            if o.xpos() > -OCTREE_MAX_SIZE and o.xneg() < OCTREE_MAX_SIZE and o.ypos() > -OCTREE_MAX_SIZE and o.yneg() < OCTREE_MAX_SIZE and o.zpos() > -OCTREE_MAX_SIZE and o.zneg() < OCTREE_MAX_SIZE:
-                octree_root.objs.add( o )
+            if o.xpos() > ot_max_x:
+                ot_max_x = o.xpos()
+            if o.xneg() < ot_min_x:
+                ot_min_x = o.xneg()
+            if o.ypos() > ot_max_y:
+                ot_max_y = o.ypos()
+            if o.yneg() < ot_min_y:
+                ot_min_y = o.yneg()
+            if o.zpos() > ot_max_z:
+                ot_max_z = o.zpos()
+            if o.zneg() < ot_min_z:
+                ot_min_z = o.zneg()
         
-        octree_root.fill_octree(OCTREE_MAX_SIZE, -OCTREE_MAX_SIZE, OCTREE_MAX_SIZE, -OCTREE_MAX_SIZE, OCTREE_MAX_SIZE, -OCTREE_MAX_SIZE, OCTREE_LEVELS)
+        for o in self.objects_3d:
+            octree_root.objs.add( o )
+        
+        octree_root.fill_octree(ot_max_x, ot_min_x, ot_max_y, ot_min_y, ot_max_z, ot_min_z, self.octree_levels)
         
         # check for collisions        
         already_collided = set([])
-        #print "Leaves: " + str(len(octree_root.get_leaves()))
         num_of_leaves = 0
         for l in octree_root.get_leaves():
             if len(l) > 1:
                 num_of_leaves += len(l)
-                #print "    Subleaves: " + str(len(l))
                 for o in l:
                     if not o in already_collided:
-                        #print "        Ball " + str( self.objects_3d.index(o) ) + " collided"
                         already_collided.add( o )
                         for o2 in already_collided:
                             if self.collides_obj(o, o2):
                                 o.reflect()
                                 o2.reflect()
-                    #else:
-                        #print "        Ball " + str( self.objects_3d.index(o) ) + " in list already"
                         
         if num_of_leaves < self.compared_min and self.frame > 3:
             self.compared_min = num_of_leaves
@@ -260,11 +278,19 @@ class OctTreeTopDownScene(Scene):
         if num_of_leaves > self.compared_max:
             self.compared_max = num_of_leaves
         
-        print "Collisions: " + '%-4s'%str(len(already_collided)) + "    Objects compared: " + '%-5s'%str(num_of_leaves) + "    Min: " + '%-5s'%str(self.compared_min) + "   Max: " + str(self.compared_max)
-        #print "FPS: " + '%-3s'%str(fps) + "    MIN: " + str(self.fps_min) + "    MAX: " + str(self.fps_max)
-        # call the super class update method
-        super(OctTreeTopDownScene, self).update(delta)
+        #If simulation is finished, print out info
+        if self.sim_time < 0 and self.SIM_TIME != 0:
+            results_file = open("results.csv", "a")
+            results_file.write("%(name)s,%(a0)d,%(a1)d,%(a2)d,%(a3)f,%(a4)f,%(a5)d,%(a6)d\n"%
+                {"name":("Octree " + str(self.octree_levels) + " Levels"),"a0":self.num_objects, "a1":self.SIM_TIME, "a2":self.frame, "a3":self.fps_min, "a4":self.fps_max, "a5":self.compared_min, "a6":self.compared_max})
+            results_file.close()
+            exit()
     
+        
+        # call the super class update method
+        super(OctreeScene, self).update(delta)
+        
+        
     def collides_obj(self, o1,o2):
         if o1==o2:
             return 0
@@ -289,5 +315,5 @@ class OctTreeTopDownScene(Scene):
     
     def draw(self):
         # call the super class draw method
-        super(OctTreeTopDownScene, self).draw()
+        super(OctreeScene, self).draw()
 
