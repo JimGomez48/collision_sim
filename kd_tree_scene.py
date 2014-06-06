@@ -8,54 +8,47 @@ from vector3 import *
 import colors
 
 
-class KdNode:
-    def __init__(self, obj, axis, left, right):
-        self.obj = obj
-        self.axis = axis
-        self.left = left
-        self.right = right
+class KdTree:
+    __root = None
+    __size = 0
 
-    # def __str__(self):
-    #     """
-    #     print using in-order traversal
-    #     """
-    #     self.__in_order_print__(self)
-    #
-    # def __in_order_print__(self, node):
-    #     """
-    #     simple in-order traversal
-    #     """
-    #     if node is None:
-    #         return
-    #
-    #     self.__in_order_print__(node.left)
-    #     print node.obj.position()
-    #     self.__in_order_print__(node.right)
+    class KdNode:
+        def __init__(self, obj, axis, left, right):
+            self.obj = obj
+            self.axis = axis
+            self.left = left
+            self.right = right
 
+    def __init__(self, objs, dimensions=3):
+        self.dims = dimensions
+        self.__root = self.__build_tree__(objs)
 
-def make_kd_tree(objs, dimensions=3, depth=0):
-    """
-    Recursively builds a KdTree by splitting along the median node for each
-    corresponding axis
+    def size(self):
+        return self.__size
 
-    :param objs: The object to store at this node
-    :param dimensions: the number od dimensions to split along
-    :param depth: the current depth of tree
-    :return: a KdNode
-    """
-    axis = depth % dimensions
-    objs = sorted(objs, key=lambda obj: obj.position()[axis])
-    median = len(objs) // 2
+    def __build_tree__(self, objs, depth=0):
+        """
+        Recursively builds a KdTree by splitting along the median node for each
+        corresponding axis
 
-    if len(objs) == 0 or objs is None:
-        return None
+        :param objs: The object to store at this node
+        :param depth: the current depth of tree
+        :return: a KdNode
+        """
+        axis = depth % self.dims
+        objs = sorted(objs, key=lambda obj: obj.position()[axis])
+        median = len(objs) // 2
 
-    return KdNode(
-        obj=objs[median],
-        axis=axis,
-        left=make_kd_tree(objs[:median], dimensions, depth + 1),
-        right=make_kd_tree(objs[median + 1:], dimensions, depth + 1),
-    )
+        if len(objs) == 0 or objs is None:
+            return None
+
+        self.__size += 1
+        return self.KdNode(
+            obj=objs[median],
+            axis=axis,
+            left=self.__build_tree__(objs[:median], depth + 1),
+            right=self.__build_tree__(objs[median + 1:], depth + 1),
+        )
 
 
 def depth_first_collision_check(node, test_obj):
@@ -90,12 +83,13 @@ class KdTreeScene(Scene):
             ball.rotate(5, Vector3(0, 1, 0))
             self.add_object_3d(ball)
         # self.add_object_3d(Volume(colors.MAGENTA))
-        self.kd_tree = None
+        self.kd_tree = KdTree(self.objects_3d, dimensions=3)
+        print str(self.kd_tree.size())
 
     def update(self, delta):
         # call the super class update method
-        self.kd_tree = make_kd_tree(self.objects_3d, dimensions=3)
-        self.check_for_collisions()
+        self.kd_tree = KdTree(self.objects_3d, dimensions=3)
+        # self.check_for_collisions()
         super(KdTreeScene, self).update(delta)
 
     def draw(self):
