@@ -84,7 +84,8 @@ class CollidableBall(CollidableObject):
         self.radius = radius
 
     def update(self, delta):
-        self.translate_v(self.velocity * delta)
+        # self.translate_v(self.velocity * delta)  # update with delta
+        self.translate_v(self.velocity)  # update without delta
         super(CollidableBall, self).update(delta)
 
     def draw(self):
@@ -96,7 +97,7 @@ class CollidableBall(CollidableObject):
         glMateriali(GL_FRONT, GL_SHININESS, 60)
         glutSolidSphere(self.radius, self.slices, self.stacks)
         # self.__draw_axes__(self.radius * 2)
-        # self.draw_velocity(self.radius * 2)
+        self.draw_velocity(self.radius * 2)
         glPopMatrix()
 
     def is_colliding(self, ball):

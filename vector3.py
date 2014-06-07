@@ -101,7 +101,7 @@ class Vector3(object):
 
     def __str__(self):
         """to string"""
-        return "(" + str(self.x) + ", " + str(self.y) + ", " + str(self.z) + ")"
+        return "[" + str(self.x) + ", " + str(self.y) + ", " + str(self.z) + "]"
 
     def is_zero_vector(self):
         return self.x == 0 and self.y == 0 and self.z == 0

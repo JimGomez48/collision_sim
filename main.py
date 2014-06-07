@@ -45,14 +45,14 @@ parser.add_argument(
     help="The number of objects to render in the scene"
 )
 parser.add_argument(
-    "--octree_levels",
+    "-o", "--octree_levels",
     type=int,
     help="Levels in the octree, if that simulation is chosen"
 )
 parser.add_argument(
-    "--sim_time",
+    "-s", "--sim_time",
     type=int,
-    help="Time to simulate for before stopping"
+    help="Time to simulate before stopping in seconds"
 )
 args = parser.parse_args()
 title = ""
@@ -66,7 +66,7 @@ elif args.scene_id == 3:
     scene = OctreeScene(args.num_objects, args.octree_levels, args.sim_time)
     title = "Octree"
 elif args.scene_id == 4:
-    scene = KdTreeScene(args.num_objects)
+    scene = KdTreeScene(args.num_objects, args.sim_time)
     title = "K-D Tree"
 elif args.scene_id == 5:
     scene = SAPScene(args.num_objects)
