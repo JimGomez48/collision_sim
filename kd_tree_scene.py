@@ -1,5 +1,4 @@
 import random as rand
-import numpy as np
 
 from scene import Scene
 from ball import *
@@ -20,11 +19,31 @@ class KdTree:
             self.right = right
 
     def __init__(self, objs, dimensions=3):
-        self.dims = dimensions
+        self.dimensions = dimensions
         self.__root = self.__build_tree__(objs)
 
     def size(self):
         return self.__size
+
+    def get_subtree(self, obj):
+        """
+        :param obj: the corresponding object of the node to be search
+        :return: the subtree with the node containing obj as it's root
+        """
+        if obj is None:
+            return None
+
+        return self.__depth_first_search__(self.__root, obj)
+
+    def __depth_first_search__(self, current_node, obj):
+        if current_node.obj is obj:
+            return current_node
+
+        axis = current_node.axis
+        if obj.position()[axis] < current_node.obj.position()[axis]:
+            return self.__depth_first_search__(current_node.left, obj)
+        else:
+            return self.__depth_first_search__(current_node.right, obj)
 
     def __build_tree__(self, objs, depth=0):
         """
@@ -35,7 +54,7 @@ class KdTree:
         :param depth: the current depth of tree
         :return: a KdNode
         """
-        axis = depth % self.dims
+        axis = depth % self.dimensions
         objs = sorted(objs, key=lambda obj: obj.position()[axis])
         median = len(objs) // 2
 
@@ -49,16 +68,6 @@ class KdTree:
             left=self.__build_tree__(objs[:median], depth + 1),
             right=self.__build_tree__(objs[median + 1:], depth + 1),
         )
-
-
-def depth_first_collision_check(node, test_obj):
-    if node is None:
-        return
-
-    if test_obj.is_colliding(node.obj):
-        test_obj.elastic_collide(node.obj)
-    depth_first_collision_check(node.left, test_obj)
-    depth_first_collision_check(node.right, test_obj)
 
 
 class KdTreeScene(Scene):
@@ -87,52 +96,32 @@ class KdTreeScene(Scene):
         print str(self.kd_tree.size())
 
     def update(self, delta):
-        # call the super class update method
         self.kd_tree = KdTree(self.objects_3d, dimensions=3)
-        # self.check_for_collisions()
+        self.check_for_collisions()
         super(KdTreeScene, self).update(delta)
 
     def draw(self):
-        # call the super class draw method
         super(KdTreeScene, self).draw()
 
     def check_for_collisions(self):
-        # already_collided = set([])
-        # for i in range(self.num_objects):
-        #     for j in range(i + 1, self.num_objects):
-        #         if self.collides(i, j):
-        #             if not i in already_collided:
-        #                 self.objects_3d[i].reflect()
-        #                 already_collided.add(i)
-        #
-        #             if not j in already_collided:
-        #                 self.objects_3d[j].reflect()
-        #                 already_collided.add(j)
-
-        # already_collided = set([])
-        # for i in range(self.num_objects):
-        #     o1 = self.objects_3d[i]
-        #     assert isinstance(o1, CollidableBall)
-            # for j in range(i + 1, self.num_objects):
-            #     o2 = self.objects_3d[j]
-            #     assert isinstance(o2, CollidableBall)
-                # if o1.is_colliding(o2):
-                #     if not i in already_collided:
-                #         already_collided.add(i)
-                #         if not j in already_collided:
-                #             already_collided.add(j)
-                #             o1.elastic_collide(o2)
-
         for o in self.objects_3d:
-            current_node = self.kd_tree
-            while not current_node.obj is o:  # search tree until matching node found
-                if current_node is None:
-                    raise StandardError(
-                        "Object not in KD tree. Something is wrong!")
-                axis = current_node.axis
-                if o.position()[axis] < current_node.obj.position()[axis]:
-                    current_node = current_node.left
-                else:
-                    current_node = current_node.right
-            # Found the matching node. Now check subtree against o
-            depth_first_collision_check(node=current_node, test_obj=o)
+            subtree = self.kd_tree.get_subtree(o)
+            if not subtree.left is None:
+                depth_first_collision_check(subtree=subtree.left, test_obj=o)
+            if not subtree.right is None:
+                depth_first_collision_check(subtree=subtree.right, test_obj=o)
+
+
+def depth_first_collision_check(subtree, test_obj):
+    """
+    Test test_obj for collisions against objects in the subtree
+
+    :param subtree: the subtree of possible colliding objects
+    :param test_obj: the object to test collision against
+    """
+    if subtree is None:
+        return
+    if test_obj.is_colliding(subtree.obj):
+        test_obj.elastic_collide(subtree.obj)
+    depth_first_collision_check(subtree.left, test_obj)
+    depth_first_collision_check(subtree.right, test_obj)

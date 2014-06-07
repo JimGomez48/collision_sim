@@ -90,12 +90,12 @@ class Vector3(object):
             raise Exception("Can only index 0, 1, or 2")
 
     def __eq__(self, other):
-        """== if components are within 0.001 of each other"""
-        if math.fabs(self.x - other.x) > 0.001:
+        """== if components are within 0.0001 of each other"""
+        if math.fabs(self.x - other.x) > 0.0001:
             return False
-        if math.fabs(self.y - other.y) > 0.001:
+        if math.fabs(self.y - other.y) > 0.0001:
             return False
-        if math.fabs(self.z - other.z) > 0.001:
+        if math.fabs(self.z - other.z) > 0.0001:
             return False
         return True
 
