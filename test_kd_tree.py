@@ -2,7 +2,7 @@ from kd_tree_scene import *
 import random as rand
 import numpy as np
 
-NUM_OBJECTS = 511
+NUM_OBJECTS = 127
 
 vectors = []
 positions = []
@@ -28,11 +28,5 @@ print "POSITIONS:"
 for p in positions:
     print p
 
-print "\nMEDIAN:"
-print str(np.median(positions, axis=0))
-
 print "\nTREE:"
 tree.print_tree()
-
-print "\nLEFT CHILDREN:"
-print str(tree.left_child_count())
