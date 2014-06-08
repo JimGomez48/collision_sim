@@ -1,8 +1,8 @@
+import sys
 import random as rand
 
 from scene import Scene
 from ball import *
-from volume import Volume
 from vector3 import *
 import colors
 
@@ -20,14 +20,6 @@ class KdTree:
             self.right = right
 
         def __str__(self):
-            # left = right = "None"
-            # if not self.left is None:
-            #     left = "True"
-            # if not self.right is None:
-            #     right = "True"
-            # return "NODE:\npos: " + str(self.obj.position()) + "\naxis: " + \
-            #        str(self.axis) + "\nleft: " + str(left) + "\nright: " + \
-            #        str(right) + "\n"
             return self.obj.position().__str__() + " axis: " + str(self.axis)
 
     def __init__(self, objs, dimensions=3):
@@ -57,9 +49,6 @@ class KdTree:
         print "HEIGHT: " + str(self.height())
         print
 
-    def left_child_count(self):
-        return self.__left_child_count__(self.__root) - 1
-
     def __print_recursive__(self, node, indent=0):
         space = ""
         for i in range(indent):
@@ -77,7 +66,6 @@ class KdTree:
             if current_node.obj.position() == obj.position():
                 return current_node
 
-            # print current_node
             axis = current_node.axis
             # print str(current_node)
             if obj.position()[axis] < current_node.obj.position()[axis]:
@@ -91,10 +79,8 @@ class KdTree:
                 # print "right"
                 return self.__depth_first_search__(current_node.right, obj)
         except AttributeError as e:
-            # THIS SHOULD NOT HAPPEN. MEANS NODE NOT FOUND...?
-            print "\nDidn't find Search-Node " + str(obj.position())
+            sys.stderr("\nDidn't find Search-Node " + str(obj.position()))
             self.print_tree()
-            # raise e
             exit()
 
     def __height_recursive__(self, node):
@@ -109,12 +95,6 @@ class KdTree:
         else:
             return right_height + 1
 
-    def __left_child_count__(self, start, count=0):
-        if start is None:
-            return count
-
-        return self.__left_child_count__(start.left, count + 1)
-
     def __build_tree__(self, objs, depth=0):
         """
         Recursively builds a KdTree by splitting along the median node for each
@@ -124,15 +104,14 @@ class KdTree:
         :param depth: the current depth of tree
         :return: a KdNode
         """
-        axis = depth % self.dimensions
-        objs = sorted(objs, key=lambda obj: obj.position()[axis])
-        # median = len(objs) // 2
-
         if len(objs) == 0 or objs is None:
             return None
 
+        axis = depth % self.dimensions
+        objs = sorted(objs, key=lambda obj: obj.position()[axis])
         median = self.__get_adjusted_median__(objs, axis)
         self.__size += 1
+
         return self.KdNode(
             obj=objs[median],
             axis=axis,
@@ -147,12 +126,8 @@ class KdTree:
         """
         assert len(objs) > 0
         assert axis in range(self.dimensions)
-        median = len(objs) // 2
-        # for i in range(len(objs)):
-        #     if objs[i].position()[axis] == objs[median].position()[axis]:
-        #         return i
-
         # walk backwards from median
+        median = len(objs) // 2
         i = median
         while i > 0:
             if objs[i].position()[axis] != objs[median].position()[axis]:
@@ -175,6 +150,7 @@ class KdTreeScene(Scene):
             self.sim_time = sim_time
             self.SIM_TIME = sim_time
 
+        # set up objects in the scene
         origin = Point3()
         for i in range(self.num_objects):
             position = Point3(
@@ -185,20 +161,19 @@ class KdTreeScene(Scene):
             ball = CollidableBall(
                 color=colors.BLUE,
                 radius=30,
-                mass=rand.randint(20, 200),
+                mass=rand.randint(20, 40),
                 start_p=position,
-                # start_v=Vector3(0, 0, rand.randint(200, 500))  # forward velocity
-                start_v=Vector3(0, 0, rand.randint(10, 20))  # forward velocity
+                start_v=Vector3(0, 0, rand.randint(20, 30))  # forward velocity
             )
             ball.update(1)  # force OM to update before turn_to_face
             ball.turn_to_face_p(origin)
             ball.rotate(5, Vector3(0, 1, 0))
             self.add_object_3d(ball)
-        # self.add_object_3d(Volume(colors.MAGENTA))
         self.kd_tree = KdTree(self.objects_3d, dimensions=3)
         print "K-D Tree size: " + str(self.kd_tree.size())
 
     def update(self, delta):
+        # update sim statistics
         self.sim_time -= delta
         self.frame += 1
         fps = 1 / delta
@@ -207,6 +182,7 @@ class KdTreeScene(Scene):
         if fps < self.fps_min:
             self.fps_min = fps
 
+        # update scene
         self.kd_tree = KdTree(self.objects_3d, dimensions=3)
         self.check_for_collisions()
         super(KdTreeScene, self).update(delta)
@@ -244,7 +220,7 @@ class KdTreeScene(Scene):
 
     def __depth_first_collision_check__(self, subtree, test_obj):
         """
-        Test test_obj for collisions against objects in the subtree
+        Test test_obj for collisions against objects in the subtree recursively
 
         :param subtree: the subtree of possible colliding objects
         :param test_obj: the object to test collision against
