@@ -51,6 +51,9 @@ class Object3D(object):
         glGetFloatv(GL_MODELVIEW_MATRIX, self.OM)
         glPopMatrix()
 
+    def __str__(self):
+        return str(self.position())
+
     def update(self, delta):
         """
         Updates the state of this 3D object by updating the OM matrix. By

@@ -12,9 +12,10 @@ class KdTree:
     __size = 0
 
     class KdNode:
-        def __init__(self, obj, axis, left, right):
+        def __init__(self, obj, axis, depth, left, right):
             self.obj = obj
             self.axis = axis
+            self.depth = depth
             self.left = left
             self.right = right
 
@@ -47,12 +48,6 @@ class KdTree:
         return self.__depth_first_search__(self.__root, obj)
 
     def height(self):
-        # int maxHeight(BinaryTree *p) {
-        #   if (!p) return 0;
-        #   int left_height = maxHeight(p->left);
-        #   int right_height = maxHeight(p->right);
-        #   return (left_height > right_height) ? left_height + 1 : right_height + 1;
-        # }
         return self.__height_recursive__(self.__root) - 1
 
     def print_tree(self):
@@ -78,24 +73,29 @@ class KdTree:
                 self.__print_recursive__(node.right, indent + 1)
 
     def __depth_first_search__(self, current_node, obj):
-        # if current_node is None:
-        #     print "Node not found"
-        #     return None
         try:
-            if current_node.obj is obj:
+            if current_node.obj.position() == obj.position():
                 return current_node
-            # if current_node.obj.position() == obj.position():
-            #     return current_node
 
             # print current_node
             axis = current_node.axis
+            # print str(current_node)
             if obj.position()[axis] < current_node.obj.position()[axis]:
+                # print str(obj.position()[axis]) + " < " + \
+                #       str(current_node.obj.position()[axis])
+                # print "left"
                 return self.__depth_first_search__(current_node.left, obj)
             else:
+                # print str(obj.position()[axis]) + " >= " + \
+                #       str(current_node.obj.position()[axis])
+                # print "right"
                 return self.__depth_first_search__(current_node.right, obj)
         except AttributeError as e:
+            # THIS SHOULD NOT HAPPEN. MEANS NODE NOT FOUND...?
+            print "\nDidn't find Search-Node " + str(obj.position())
             self.print_tree()
-            raise e
+            # raise e
+            exit()
 
     def __height_recursive__(self, node):
         if node is None:
@@ -126,18 +126,39 @@ class KdTree:
         """
         axis = depth % self.dimensions
         objs = sorted(objs, key=lambda obj: obj.position()[axis])
-        median = len(objs) // 2
+        # median = len(objs) // 2
 
         if len(objs) == 0 or objs is None:
             return None
 
+        median = self.__get_adjusted_median__(objs, axis)
         self.__size += 1
         return self.KdNode(
             obj=objs[median],
             axis=axis,
+            depth=depth,
             left=self.__build_tree__(objs[:median], depth + 1),
             right=self.__build_tree__(objs[median + 1:], depth + 1),
         )
+
+    def __get_adjusted_median__(self, objs, axis):
+        """
+        Adjusts median to be the FIRST occurrence of median axis value
+        """
+        assert len(objs) > 0
+        assert axis in range(self.dimensions)
+        median = len(objs) // 2
+        # for i in range(len(objs)):
+        #     if objs[i].position()[axis] == objs[median].position()[axis]:
+        #         return i
+
+        # walk backwards from median
+        i = median
+        while i > 0:
+            if objs[i].position()[axis] != objs[median].position()[axis]:
+                return i + 1
+            i -= 1
+        return 0
 
 
 class KdTreeScene(Scene):
@@ -163,7 +184,7 @@ class KdTreeScene(Scene):
             )
             ball = CollidableBall(
                 color=colors.BLUE,
-                radius=20,
+                radius=30,
                 mass=rand.randint(20, 200),
                 start_p=position,
                 # start_v=Vector3(0, 0, rand.randint(200, 500))  # forward velocity
