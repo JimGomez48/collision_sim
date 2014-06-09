@@ -13,5 +13,11 @@ do
     do
         python main.py 3 $n --octree_levels $l --sim_time 10
     done
+
+    # K-D Tree    
+    python main.py 4 $n -s 10    
+
+    # Sweep and Prune
+    # TODO
     
 done
