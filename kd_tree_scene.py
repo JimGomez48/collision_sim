@@ -163,11 +163,11 @@ class KdTreeScene(Scene):
                 radius=30,
                 mass=rand.randint(20, 40),
                 start_p=position,
-                start_v=Vector3(0, 0, rand.randint(20, 30))  # forward velocity
+                start_v=Vector3(0, 0, rand.randint(10, 20))  # forward velocity
             )
             ball.update(1)  # force OM to update before turn_to_face
             ball.turn_to_face_p(origin)
-            ball.rotate(5, Vector3(0, 1, 0))
+            # ball.rotate(2, Vector3(0, 1, 0))
             self.add_object_3d(ball)
         self.kd_tree = KdTree(self.objects_3d, dimensions=3)
         print "K-D Tree size: " + str(self.kd_tree.size())
@@ -229,5 +229,6 @@ class KdTreeScene(Scene):
             return
         if test_obj.is_colliding(subtree.obj):
             test_obj.elastic_collide(subtree.obj)
+            # test_obj.reflect(subtree.obj)
         self.__depth_first_collision_check__(subtree.left, test_obj)
         self.__depth_first_collision_check__(subtree.right, test_obj)

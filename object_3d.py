@@ -271,15 +271,12 @@ class CollidableObject(Object3D):
         # (m1*u1^2)/2 + (m2*u2^2)/2 = (m1*v1^2)/2 + (m2*u2^2)/2
         # assert isinstance(obj) is CollidableObject
 
-        # p1 = self.position()
-        # p2 = obj.position()
-        v1 = self.get_forward() * self.velocity.z
-        v2 = obj.get_forward() * obj.velocity.z
+        # v1 = self.get_forward() * self.velocity.z
+        # v2 = obj.get_forward() * obj.velocity.z
+        v1 = self.get_forward() * mag(self.velocity)
+        v2 = obj.get_forward() * mag(obj.velocity)
         m1 = self.mass
         m2 = obj.mass
-
-        # angle = math.acos(dot(p1, p2) / (normalize(p1) * normalize(p2)))
-        # angle = math.degrees(angle)
 
         v1_new = Vector3()
         v2_new = Vector3()
@@ -294,6 +291,10 @@ class CollidableObject(Object3D):
 
         self.velocity = v1
         obj.velocity = v2
+
+    def reflect(self, obj):
+        self.velocity *= -1
+        obj.velocity *= -1
 
     def draw_velocity(self, length):
         x = GLfloat(normalize(self.velocity).x * length)

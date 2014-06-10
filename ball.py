@@ -4,6 +4,7 @@ from OpenGL.GLUT import *
 from object_3d import *
 import colors
 
+
 class Ball(Object3D):
 
     radius = 30
