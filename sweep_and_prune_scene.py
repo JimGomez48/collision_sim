@@ -13,12 +13,25 @@ random.seed()
 
 class SAPScene(Scene):
 
-    PosList = []
     xList = []
     yList = []
     zList = []
-    def __init__(self, num_objects=50):
+
+    def __init__(self, num_objects=50, sim_time=10):
         super(SAPScene, self).__init__(num_objects)
+
+        # initialize fps & frames
+        self.frame = 0
+        self.fps_max = 0
+        self.fps_min = 1000
+        if sim_time is None:
+            self.sim_time = 0
+            self.SIM_TIME = 0
+        else:
+            self.sim_time = sim_time
+            self.SIM_TIME = sim_time
+
+        # set up objects in scene
         for i in range(self.num_objects):
             initxp = random.randint(-500,500)
             inityp = random.randint(-500,500)
@@ -45,6 +58,36 @@ class SAPScene(Scene):
         
     def update(self, delta):
         
+        # update sim statistics
+        self.sim_time -= delta
+        self.frame += 1
+        fps = 1 / delta
+        if fps > self.fps_max and self.frame > 3:
+            self.fps_max = fps
+        if fps < self.fps_min:
+            self.fps_min = fps
+
+        # perform collision checking
+        self.collisionCheck()
+        # call the super class update method
+        super(SAPScene, self).update(delta)
+
+        # if simulation is finished, print out info and exit
+        if self.sim_time < 0 and self.SIM_TIME != 0:
+            results_file = open("results_utkarsh.csv", "a")
+            results_file.write(
+                "%(name)s,%(a0)d,%(a1)d,%(a2)d,%(a3)f,%(a4)f,%(a5)d,%(a6)d\n" %
+                {
+                "name":("Sweep and Prune "),
+                "a0": self.num_objects, "a1": self.SIM_TIME, "a2": self.frame,
+                "a3": self.fps_min, "a4": self.fps_max, "a5": 0, "a6": 0
+                }
+            )
+            results_file.close()
+            exit()
+
+    def collisionCheck(self):
+
         # currently collecting start and end of AABB as position (x,y,z) +- radius/2 instead of axial projections
         # store start and end of object boundaries along each axis, used to determine if collision is occurring
 
@@ -116,9 +159,6 @@ class SAPScene(Scene):
             idx2 = obj[1]
             self.objects_3d[idx1].reflect()
             self.objects_3d[idx2].reflect()
-            
-        # call the super class update method
-        super(SAPScene, self).update(delta)
 
     def draw(self):
         # call the super class draw method
