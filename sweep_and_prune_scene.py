@@ -78,7 +78,7 @@ class SAPScene(Scene):
             results_file.write(
                 "%(name)s,%(a0)d,%(a1)d,%(a2)d,%(a3)f,%(a4)f,%(a5)d,%(a6)d\n" %
                 {
-                "name":("Sweep and Prune "),
+                "name":("Sweep and Prune"),
                 "a0": self.num_objects, "a1": self.SIM_TIME, "a2": self.frame,
                 "a3": self.fps_min, "a4": self.fps_max, "a5": 0, "a6": 0
                 }
