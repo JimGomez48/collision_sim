@@ -18,6 +18,6 @@ do
     python main.py 4 $n -s 10    
 
     # Sweep and Prune
-    # TODO
+    python main.py 5 $n -s 10
     
 done
